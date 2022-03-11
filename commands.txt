@@ -1,0 +1,3 @@
+﻿dotnet ef dbcontext scaffold "Server=tcp:autotag.database.windows.net,1433;Initial Catalog=Production;Persist Security Info=False;User ID=erickmsdev;Password=EM.,2021;MultipleActiveResultSets=False;Encrypt=True;TrustServerCertificate=False;Connection Timeout=30;" Microsoft.EntityFrameworkCore.SqlServer --context AutoTagContext --output-dir Models
+
+dotnet ef dbcontext scaffold name=Production Microsoft.EntityFrameworkCore.SqlServer --context AutoTagContext --output-dir Models --force

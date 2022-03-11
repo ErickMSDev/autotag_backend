@@ -1,0 +1,30 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 16
+VisualStudioVersion = 25.0.1700.0
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AutoTagBackEnd", "autotag_backend\AutoTagBackEnd.csproj", "{01C088A1-1F10-49BF-9A92-BA3DB0B41587}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Elementos de la solución", "Elementos de la solución", "{52055597-3481-4BFD-9FA5-AC4EFACC509F}"
+	ProjectSection(SolutionItems) = preProject
+		.editorconfig = .editorconfig
+	EndProjectSection
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{01C088A1-1F10-49BF-9A92-BA3DB0B41587}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{01C088A1-1F10-49BF-9A92-BA3DB0B41587}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{01C088A1-1F10-49BF-9A92-BA3DB0B41587}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{01C088A1-1F10-49BF-9A92-BA3DB0B41587}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {3DFC56FF-468B-455C-A337-7D935B063275}
+	EndGlobalSection
+EndGlobal
