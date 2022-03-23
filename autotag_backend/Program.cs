@@ -31,7 +31,7 @@ builder.Services.AddCors(options =>
     options.AddDefaultPolicy(builderCors =>
     {
         builderCors.WithOrigins(
-            "http://localhost:3000", "http://localhost:8080")
+            "http://localhost:3000", "http://localhost:8080", "https://viasimple.cl", "https://www.viasimple.cl")
         .AllowAnyHeader()
         .AllowAnyMethod();
     });
