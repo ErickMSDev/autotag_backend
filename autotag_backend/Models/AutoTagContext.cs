@@ -87,6 +87,8 @@ namespace AutoTagBackEnd.Models
 
                 entity.ToTable("DateDimension");
 
+                entity.HasIndex(e => e.TheDate, "IX_THEDATE_INC_THE_FIRST_OF_MONTH");
+
                 entity.Property(e => e.Has53Isoweeks).HasColumnName("Has53ISOWeeks");
 
                 entity.Property(e => e.Mmyyyy)
@@ -208,6 +210,8 @@ namespace AutoTagBackEnd.Models
             modelBuilder.Entity<DocumentDetail>(entity =>
             {
                 entity.ToTable("DocumentDetail");
+
+                entity.HasIndex(e => e.DocumentId, "IX_DOCUMENT_INC_ALL");
 
                 entity.Property(e => e.Id).HasColumnName("id");
 
@@ -485,6 +489,8 @@ namespace AutoTagBackEnd.Models
                     .HasColumnName("error_message");
 
                 entity.Property(e => e.HasError).HasColumnName("has_error");
+
+                entity.Property(e => e.HasLoginError).HasColumnName("has_login_error");
 
                 entity.Property(e => e.HasPendingProcess).HasColumnName("has_pending_process");
 

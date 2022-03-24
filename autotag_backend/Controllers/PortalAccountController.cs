@@ -108,6 +108,7 @@ namespace AutoTagBackEnd.Controllers
                 portalAccount.Password = body.Password;
                 portalAccount.Enabled = body.Enabled;
                 portalAccount.HasError = false;
+                portalAccount.HasLoginError = false;
                 portalAccount.ErrorMessage = null;
                 _context.SaveChanges();
                 respPortalAccountId = portalAccount.Id;

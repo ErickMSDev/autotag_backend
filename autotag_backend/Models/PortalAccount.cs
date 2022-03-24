@@ -22,6 +22,7 @@ namespace AutoTagBackEnd.Models
         public DateTime? DeletionDate { get; set; }
         public bool IsBeingProcessed { get; set; }
         public bool HasError { get; set; }
+        public bool HasLoginError { get; set; }
         public string? ErrorMessage { get; set; }
         public byte[] RowVersion { get; set; } = null!;
         public bool HasPendingProcess { get; set; }
