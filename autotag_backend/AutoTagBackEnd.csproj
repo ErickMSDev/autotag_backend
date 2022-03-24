@@ -18,8 +18,8 @@
     <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="6.0.3" />
     <PackageReference Include="AutoMapper" Version="11.0.1" />
     <PackageReference Include="AutoMapper.Extensions.Microsoft.DependencyInjection" Version="11.0.0" />
-    <PackageReference Include="Microsoft.Identity.Client" Version="4.42.0" />
-    <PackageReference Include="Microsoft.PowerBI.Api" Version="4.4.0" />
+    <PackageReference Include="Microsoft.Identity.Client" Version="4.42.1" />
+    <PackageReference Include="Microsoft.PowerBI.Api" Version="4.5.0" />
   </ItemGroup>
 
   <ItemGroup>

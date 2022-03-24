@@ -25,12 +25,12 @@ namespace AutoTagBackEnd.Controllers
         }
 
         [HttpPost]
-        public IActionResult Login([FromBody] AuthenticateRequest body)
+        public IActionResult Login([FromBody] LoginRequest body)
         {
             var response = _userService.Authenticate(_context, body);
 
             if (response == null)
-                return BadRequest(new { message = "Username or password is incorrect" });
+                return Ok(new { error = new[] { new { type = "password", message = "Email o constraseña incorrecta" } } });
 
             return Ok(response);
         }
@@ -42,18 +42,20 @@ namespace AutoTagBackEnd.Controllers
             var response = _userService.Authenticate(_context, this.CurrentAccount.Id);
 
             if (response == null)
-                return BadRequest(new { message = "Username or password is incorrect" });
+                return Ok(new { error = new[] { new { type = "password", message = "Email o constraseña incorrecta" } } });
 
             return Ok(response);
         }
 
         [HttpPost]
-        public IActionResult Register([FromBody] AuthenticateRequest body)
+        public IActionResult Register([FromBody] RegisterRequest body)
         {
-            var response = _userService.Authenticate(_context, body);
+            
+
+            var response = _userService.Register(_context, body);
 
             if (response == null)
-                return BadRequest(new { message = "Username or password is incorrect" });
+                return Ok(new { error = new[] { new { type = "email", message = "La cuenta ya existe" } } });
 
             return Ok(response);
         }

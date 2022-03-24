@@ -7,7 +7,9 @@ namespace AutoTagBackEnd.Models
     {
         public int Id { get; set; }
         public int PortalAccountId { get; set; }
-        public DateTime Date { get; set; }
+        public int? FreewayId { get; set; }
+        public DateTime TransitedOn { get; set; }
+        public DateTime TransitedDay { get; set; }
         public string VehiclePatent { get; set; } = null!;
         public decimal Amount { get; set; }
         public string? Direction { get; set; }

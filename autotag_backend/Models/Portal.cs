@@ -7,6 +7,7 @@ namespace AutoTagBackEnd.Models
     {
         public Portal()
         {
+            Freeways = new HashSet<Freeway>();
             PortalAccounts = new HashSet<PortalAccount>();
         }
 
@@ -15,6 +16,7 @@ namespace AutoTagBackEnd.Models
         public string Name { get; set; } = null!;
         public int Order { get; set; }
 
+        public virtual ICollection<Freeway> Freeways { get; set; }
         public virtual ICollection<PortalAccount> PortalAccounts { get; set; }
     }
 }

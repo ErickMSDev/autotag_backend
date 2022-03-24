@@ -12,8 +12,9 @@ namespace AutoTagBackEnd.Services
 {
     public interface IUserService
     {
-        AuthenticateResponse Authenticate(AutoTagContext _context, AuthenticateRequest model);
+        AuthenticateResponse Authenticate(AutoTagContext _context, LoginRequest model);
         AuthenticateResponse Authenticate(AutoTagContext _context, int accountId);
+        AuthenticateResponse Register(AutoTagContext _context, RegisterRequest model);
         IEnumerable<Account> GetAll(AutoTagContext _context);
         Account GetById(AutoTagContext _context, int id);
     }
@@ -27,7 +28,7 @@ namespace AutoTagBackEnd.Services
             _jwtSettings = jwtSettings.Value;
         }
 
-        public AuthenticateResponse Authenticate(AutoTagContext _context, AuthenticateRequest model)
+        public AuthenticateResponse Authenticate(AutoTagContext _context, LoginRequest model)
         {
             Account account = _context.Accounts.SingleOrDefault(x => x.Email == model.Email && x.Password == model.Password);
 
@@ -65,6 +66,37 @@ namespace AutoTagBackEnd.Services
             var token = generateJwtToken(account);
 
             return new AuthenticateResponse(account, token);
+        }
+
+        public AuthenticateResponse Register(AutoTagContext _context, RegisterRequest model)
+        {
+            Account account = _context.Accounts.SingleOrDefault(x => x.Email == model.Email);
+
+            // return null if user not found
+            if (account != null) return null;
+
+            Role role = _context.Roles.SingleOrDefault(x => x.Code == "user");
+
+            // return null if role not found
+            if (role == null) throw new Exception("No se encontró el rol user");
+
+
+            Account newAccount = new Account()
+            {
+                RoleId = role.Id,
+                Email = model.Email,
+                Password = model.Password,
+                FirstName = model.FirstName,
+                LastName = model.LastName,
+                Enabled = true
+            };
+            _context.Accounts.Add(newAccount);
+            _context.SaveChanges();
+
+            // authentication successful so generate jwt token
+            var token = generateJwtToken(newAccount);
+
+            return new AuthenticateResponse(newAccount, token);
         }
 
         public IEnumerable<Account> GetAll(AutoTagContext _context)

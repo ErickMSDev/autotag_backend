@@ -17,9 +17,11 @@ namespace AutoTagBackEnd.Models
         }
 
         public virtual DbSet<Account> Accounts { get; set; } = null!;
+        public virtual DbSet<DateDimension> DateDimensions { get; set; } = null!;
         public virtual DbSet<Document> Documents { get; set; } = null!;
         public virtual DbSet<DocumentDetail> DocumentDetails { get; set; } = null!;
         public virtual DbSet<DocumentState> DocumentStates { get; set; } = null!;
+        public virtual DbSet<Freeway> Freeways { get; set; } = null!;
         public virtual DbSet<Notification> Notifications { get; set; } = null!;
         public virtual DbSet<NotificationType> NotificationTypes { get; set; } = null!;
         public virtual DbSet<Person> People { get; set; } = null!;
@@ -77,6 +79,71 @@ namespace AutoTagBackEnd.Models
                     .HasForeignKey(d => d.RoleId)
                     .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("FK_Account_Role");
+            });
+
+            modelBuilder.Entity<DateDimension>(entity =>
+            {
+                entity.HasNoKey();
+
+                entity.ToTable("DateDimension");
+
+                entity.Property(e => e.Has53Isoweeks).HasColumnName("Has53ISOWeeks");
+
+                entity.Property(e => e.Mmyyyy)
+                    .HasMaxLength(6)
+                    .IsUnicode(false)
+                    .HasColumnName("MMYYYY")
+                    .IsFixedLength();
+
+                entity.Property(e => e.Style101)
+                    .HasMaxLength(10)
+                    .IsUnicode(false)
+                    .IsFixedLength();
+
+                entity.Property(e => e.Style103)
+                    .HasMaxLength(10)
+                    .IsUnicode(false)
+                    .IsFixedLength();
+
+                entity.Property(e => e.Style112)
+                    .HasMaxLength(8)
+                    .IsUnicode(false)
+                    .IsFixedLength();
+
+                entity.Property(e => e.Style120)
+                    .HasMaxLength(10)
+                    .IsUnicode(false)
+                    .IsFixedLength();
+
+                entity.Property(e => e.TheDate).HasColumnType("date");
+
+                entity.Property(e => e.TheDayName).HasMaxLength(30);
+
+                entity.Property(e => e.TheFirstOfMonth).HasColumnType("date");
+
+                entity.Property(e => e.TheFirstOfNextMonth).HasColumnType("date");
+
+                entity.Property(e => e.TheFirstOfQuarter).HasColumnType("date");
+
+                entity.Property(e => e.TheFirstOfWeek).HasColumnType("date");
+
+                entity.Property(e => e.TheFirstOfYear).HasColumnType("date");
+
+                entity.Property(e => e.TheIsoweek).HasColumnName("TheISOweek");
+
+                entity.Property(e => e.TheIsoyear).HasColumnName("TheISOYear");
+
+                entity.Property(e => e.TheLastOfMonth).HasColumnType("date");
+
+                entity.Property(e => e.TheLastOfNextMonth).HasColumnType("date");
+
+                entity.Property(e => e.TheLastOfQuarter).HasColumnType("date");
+
+                entity.Property(e => e.TheLastOfWeek).HasColumnType("date");
+
+                entity.Property(e => e.TheLastOfYear).HasColumnType("date");
+
+                entity.Property(e => e.TheMonthName).HasMaxLength(30);
             });
 
             modelBuilder.Entity<Document>(entity =>
@@ -153,10 +220,6 @@ namespace AutoTagBackEnd.Models
                     .IsUnicode(false)
                     .HasColumnName("axis");
 
-                entity.Property(e => e.Date)
-                    .HasColumnType("datetime")
-                    .HasColumnName("date");
-
                 entity.Property(e => e.DayType)
                     .HasMaxLength(50)
                     .IsUnicode(false)
@@ -178,6 +241,8 @@ namespace AutoTagBackEnd.Models
                     .HasColumnName("Document_code");
 
                 entity.Property(e => e.DocumentId).HasColumnName("Document_id");
+
+                entity.Property(e => e.FreewayId).HasColumnName("Freeway_id");
 
                 entity.Property(e => e.Gantry)
                     .HasMaxLength(50)
@@ -202,6 +267,14 @@ namespace AutoTagBackEnd.Models
                     .HasMaxLength(50)
                     .IsUnicode(false)
                     .HasColumnName("tag");
+
+                entity.Property(e => e.TransitedDay)
+                    .HasColumnType("date")
+                    .HasColumnName("transited_day");
+
+                entity.Property(e => e.TransitedOn)
+                    .HasColumnType("datetime")
+                    .HasColumnName("transited_on");
 
                 entity.Property(e => e.VehiclePatent)
                     .HasMaxLength(10)
@@ -230,6 +303,41 @@ namespace AutoTagBackEnd.Models
                     .HasMaxLength(50)
                     .IsUnicode(false)
                     .HasColumnName("name");
+            });
+
+            modelBuilder.Entity<Freeway>(entity =>
+            {
+                entity.ToTable("Freeway");
+
+                entity.HasIndex(e => e.Code, "IX_Freeway")
+                    .IsUnique();
+
+                entity.Property(e => e.Id).HasColumnName("id");
+
+                entity.Property(e => e.Code)
+                    .HasMaxLength(50)
+                    .IsUnicode(false)
+                    .HasColumnName("code");
+
+                entity.Property(e => e.ExternalCode)
+                    .HasMaxLength(50)
+                    .IsUnicode(false)
+                    .HasColumnName("external_code");
+
+                entity.Property(e => e.Name)
+                    .HasMaxLength(50)
+                    .IsUnicode(false)
+                    .HasColumnName("name");
+
+                entity.Property(e => e.Order).HasColumnName("order");
+
+                entity.Property(e => e.PortalId).HasColumnName("Portal_id");
+
+                entity.HasOne(d => d.Portal)
+                    .WithMany(p => p.Freeways)
+                    .HasForeignKey(d => d.PortalId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_Freeway_Portal");
             });
 
             modelBuilder.Entity<Notification>(entity =>
@@ -373,7 +481,6 @@ namespace AutoTagBackEnd.Models
                 entity.Property(e => e.Enabled).HasColumnName("enabled");
 
                 entity.Property(e => e.ErrorMessage)
-                    .HasMaxLength(100)
                     .IsUnicode(false)
                     .HasColumnName("error_message");
 
@@ -450,10 +557,6 @@ namespace AutoTagBackEnd.Models
                     .IsUnicode(false)
                     .HasColumnName("axis");
 
-                entity.Property(e => e.Date)
-                    .HasColumnType("datetime")
-                    .HasColumnName("date");
-
                 entity.Property(e => e.DayType)
                     .HasMaxLength(50)
                     .IsUnicode(false)
@@ -468,6 +571,8 @@ namespace AutoTagBackEnd.Models
                     .HasMaxLength(50)
                     .IsUnicode(false)
                     .HasColumnName("direction");
+
+                entity.Property(e => e.FreewayId).HasColumnName("Freeway_id");
 
                 entity.Property(e => e.Gantry)
                     .HasMaxLength(50)
@@ -494,6 +599,14 @@ namespace AutoTagBackEnd.Models
                     .HasMaxLength(50)
                     .IsUnicode(false)
                     .HasColumnName("tag");
+
+                entity.Property(e => e.TransitedDay)
+                    .HasColumnType("date")
+                    .HasColumnName("transited_day");
+
+                entity.Property(e => e.TransitedOn)
+                    .HasColumnType("datetime")
+                    .HasColumnName("transited_on");
 
                 entity.Property(e => e.VehiclePatent)
                     .HasMaxLength(10)
