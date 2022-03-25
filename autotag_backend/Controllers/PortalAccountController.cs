@@ -96,6 +96,7 @@ namespace AutoTagBackEnd.Controllers
                     Run = body.Run,
                     Password = body.Password,
                     Enabled = body.Enabled,
+                    HasPendingProcess = true,
                     CreationDate = DateTime.Now
                 };
                 _context.PortalAccounts.Add(portalAccount);
