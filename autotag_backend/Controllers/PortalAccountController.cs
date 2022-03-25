@@ -40,7 +40,10 @@ namespace AutoTagBackEnd.Controllers
                     PortalName = pa.Portal.Name,
                     Run = pa.Run,
                     Password = pa.Password,
-                    Enabled = pa.Enabled
+                    Enabled = pa.Enabled,
+                    StatusCode = PortalAccountHelper.GetStatus(pa).Code,
+                    StatusName = PortalAccountHelper.GetStatus(pa).Name,
+                    StatusDescription = PortalAccountHelper.GetStatus(pa).Description
                 }).ToList();
 
             return listPortalAccount;
@@ -65,7 +68,10 @@ namespace AutoTagBackEnd.Controllers
                      PortalName = pa.Portal.Name,
                      Run = pa.Run,
                      Password = pa.Password,
-                     Enabled = pa.Enabled
+                     Enabled = pa.Enabled,
+                     StatusCode = PortalAccountHelper.GetStatus(pa).Code,
+                     StatusName = PortalAccountHelper.GetStatus(pa).Name,
+                     StatusDescription = PortalAccountHelper.GetStatus(pa).Description
                  }).SingleOrDefault();
 
             return portalAccount;
@@ -127,7 +133,10 @@ namespace AutoTagBackEnd.Controllers
                      PortalName = pa.Portal.Name,
                      Run = pa.Run,
                      Password = pa.Password,
-                     Enabled = pa.Enabled
+                     Enabled = pa.Enabled,
+                     StatusCode = PortalAccountHelper.GetStatus(pa).Code,
+                     StatusName = PortalAccountHelper.GetStatus(pa).Name,
+                     StatusDescription = PortalAccountHelper.GetStatus(pa).Description
                  }).SingleOrDefault();
 
             return respPortalAccount;
