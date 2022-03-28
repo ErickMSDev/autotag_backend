@@ -7,6 +7,12 @@
 		public string ReportDashboardId { get; set; }
 
 		public string ReportTransitsId { get; set; }
+
+		public string ReportFreewayAnalysisId { get; set; }
+
+		public string ReportVehicleAnalysisId { get; set; }
+
+		public string ReportDocumentListId { get; set; }
 	}
 }
 

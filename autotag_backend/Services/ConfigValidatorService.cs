@@ -61,6 +61,30 @@ namespace AutoTagBackEnd.Services
             {
                 message = "Please enter a valid guid for Report Id in appsettings.json file";
             }
+            else if (string.IsNullOrWhiteSpace(powerBI.Value.ReportVehicleAnalysisId))
+            {
+                message = "Report Id is not set in appsettings.json file";
+            }
+            else if (!IsValidGuid(powerBI.Value.ReportVehicleAnalysisId))
+            {
+                message = "Please enter a valid guid for Report Id in appsettings.json file";
+            }
+            else if (string.IsNullOrWhiteSpace(powerBI.Value.ReportFreewayAnalysisId))
+            {
+                message = "Report Id is not set in appsettings.json file";
+            }
+            else if (!IsValidGuid(powerBI.Value.ReportFreewayAnalysisId))
+            {
+                message = "Please enter a valid guid for Report Id in appsettings.json file";
+            }
+            else if (string.IsNullOrWhiteSpace(powerBI.Value.ReportDocumentListId))
+            {
+                message = "Report Id is not set in appsettings.json file";
+            }
+            else if (!IsValidGuid(powerBI.Value.ReportDocumentListId))
+            {
+                message = "Please enter a valid guid for Report Id in appsettings.json file";
+            }
             else if (isAuthModeMasterUser && string.IsNullOrWhiteSpace(azureAd.Value.PbiUsername))
             {
                 message = "Master user email is not set in appsettings.json file";

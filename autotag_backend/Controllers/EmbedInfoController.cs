@@ -82,6 +82,90 @@ namespace AutoTagBackEnd.Controllers
             EmbedParams embedParams = pbiEmbedService.GetEmbedParams(new Guid(powerBI.Value.WorkspaceId), new Guid(powerBI.Value.ReportTransitsId), account.Email, rolCode);
             return embedParams;
         }
+
+        /// <summary>
+        /// Returns Embed token, Embed URL, and Embed token expiry to the client
+        /// </summary>
+        /// <returns>JSON containing parameters for embedding</returns>
+        [Authorize]
+        [HttpPost]
+        public EmbedParams GetEmbedInfoFreewayAnalysis()
+        {
+            // Validate whether all the required configurations are provided in appsettings.json
+            string configValidationResult = ConfigValidatorService.ValidateConfig(azureAd, powerBI);
+            if (configValidationResult != null)
+            {
+                HttpContext.Response.StatusCode = 400;
+                return null;
+            }
+
+            Account account = _context.Accounts.Include(db => db.Role).Where(a => a.Id == this.CurrentAccount.Id).SingleOrDefault();
+            if (account == null)
+            {
+                HttpContext.Response.StatusCode = 400;
+                throw new Exception("No se encontró el cliente");
+            }
+            string rolCode = account.Role.Code;
+
+            EmbedParams embedParams = pbiEmbedService.GetEmbedParams(new Guid(powerBI.Value.WorkspaceId), new Guid(powerBI.Value.ReportFreewayAnalysisId), account.Email, rolCode);
+            return embedParams;
+        }
+
+        /// <summary>
+        /// Returns Embed token, Embed URL, and Embed token expiry to the client
+        /// </summary>
+        /// <returns>JSON containing parameters for embedding</returns>
+        [Authorize]
+        [HttpPost]
+        public EmbedParams GetEmbedInfoVehicleAnalysis()
+        {
+            // Validate whether all the required configurations are provided in appsettings.json
+            string configValidationResult = ConfigValidatorService.ValidateConfig(azureAd, powerBI);
+            if (configValidationResult != null)
+            {
+                HttpContext.Response.StatusCode = 400;
+                return null;
+            }
+
+            Account account = _context.Accounts.Include(db => db.Role).Where(a => a.Id == this.CurrentAccount.Id).SingleOrDefault();
+            if (account == null)
+            {
+                HttpContext.Response.StatusCode = 400;
+                throw new Exception("No se encontró el cliente");
+            }
+            string rolCode = account.Role.Code;
+
+            EmbedParams embedParams = pbiEmbedService.GetEmbedParams(new Guid(powerBI.Value.WorkspaceId), new Guid(powerBI.Value.ReportVehicleAnalysisId), account.Email, rolCode);
+            return embedParams;
+        }
+
+        /// <summary>
+        /// Returns Embed token, Embed URL, and Embed token expiry to the client
+        /// </summary>
+        /// <returns>JSON containing parameters for embedding</returns>
+        [Authorize]
+        [HttpPost]
+        public EmbedParams GetEmbedInfoDocumentList()
+        {
+            // Validate whether all the required configurations are provided in appsettings.json
+            string configValidationResult = ConfigValidatorService.ValidateConfig(azureAd, powerBI);
+            if (configValidationResult != null)
+            {
+                HttpContext.Response.StatusCode = 400;
+                return null;
+            }
+
+            Account account = _context.Accounts.Include(db => db.Role).Where(a => a.Id == this.CurrentAccount.Id).SingleOrDefault();
+            if (account == null)
+            {
+                HttpContext.Response.StatusCode = 400;
+                throw new Exception("No se encontró el cliente");
+            }
+            string rolCode = account.Role.Code;
+
+            EmbedParams embedParams = pbiEmbedService.GetEmbedParams(new Guid(powerBI.Value.WorkspaceId), new Guid(powerBI.Value.ReportDocumentListId), account.Email, rolCode);
+            return embedParams;
+        }
     }
 }
 
