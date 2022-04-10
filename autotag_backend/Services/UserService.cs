@@ -7,6 +7,7 @@ using AutoTagBackEnd.Helpers;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.Extensions.Options;
 using AutoTagBackEnd.Entities;
+using System.Globalization;
 
 namespace AutoTagBackEnd.Services
 {
@@ -102,6 +103,9 @@ namespace AutoTagBackEnd.Services
             _context.AccountRequests.Add(accountRequest);
             _context.SaveChanges();
 
+            CultureInfo cultureInfo = Thread.CurrentThread.CurrentCulture;
+            TextInfo textInfo = cultureInfo.TextInfo;
+
             // Enviar mail de confirmación de mail
             EmailService.SendEmail(new UserEmailOptions() {
                 ToEmails = new List<string>() { accountRequest.Email },
@@ -109,7 +113,7 @@ namespace AutoTagBackEnd.Services
                 Template = "confirmacion_email",
                 Params = new Dictionary<string, string>()
                 {
-                    ["accountFirstName"] = accountRequest.FirstName,
+                    ["accountFirstName"] = textInfo.ToTitleCase(accountRequest.FirstName),
                     ["token"] = accountRequest.Code
                 }
             });
