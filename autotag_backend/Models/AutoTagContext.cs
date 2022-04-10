@@ -17,13 +17,16 @@ namespace AutoTagBackEnd.Models
         }
 
         public virtual DbSet<Account> Accounts { get; set; } = null!;
+        public virtual DbSet<AccountRequest> AccountRequests { get; set; } = null!;
         public virtual DbSet<DateDimension> DateDimensions { get; set; } = null!;
         public virtual DbSet<Document> Documents { get; set; } = null!;
         public virtual DbSet<DocumentDetail> DocumentDetails { get; set; } = null!;
         public virtual DbSet<DocumentState> DocumentStates { get; set; } = null!;
+        public virtual DbSet<DomainBlacklist> DomainBlacklists { get; set; } = null!;
         public virtual DbSet<Freeway> Freeways { get; set; } = null!;
         public virtual DbSet<Notification> Notifications { get; set; } = null!;
         public virtual DbSet<NotificationType> NotificationTypes { get; set; } = null!;
+        public virtual DbSet<PeopleTransit> PeopleTransits { get; set; } = null!;
         public virtual DbSet<Person> People { get; set; } = null!;
         public virtual DbSet<Portal> Portals { get; set; } = null!;
         public virtual DbSet<PortalAccount> PortalAccounts { get; set; } = null!;
@@ -79,6 +82,41 @@ namespace AutoTagBackEnd.Models
                     .HasForeignKey(d => d.RoleId)
                     .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("FK_Account_Role");
+            });
+
+            modelBuilder.Entity<AccountRequest>(entity =>
+            {
+                entity.ToTable("AccountRequest");
+
+                entity.Property(e => e.Id).HasColumnName("id");
+
+                entity.Property(e => e.Code)
+                    .IsUnicode(false)
+                    .HasColumnName("code");
+
+                entity.Property(e => e.Date)
+                    .HasColumnType("date")
+                    .HasColumnName("date");
+
+                entity.Property(e => e.Email)
+                    .HasMaxLength(100)
+                    .IsUnicode(false)
+                    .HasColumnName("email");
+
+                entity.Property(e => e.FirstName)
+                    .HasMaxLength(100)
+                    .IsUnicode(false)
+                    .HasColumnName("first_name");
+
+                entity.Property(e => e.LastName)
+                    .HasMaxLength(100)
+                    .IsUnicode(false)
+                    .HasColumnName("last_name");
+
+                entity.Property(e => e.Password)
+                    .HasMaxLength(100)
+                    .IsUnicode(false)
+                    .HasColumnName("password");
             });
 
             modelBuilder.Entity<DateDimension>(entity =>
@@ -309,6 +347,18 @@ namespace AutoTagBackEnd.Models
                     .HasColumnName("name");
             });
 
+            modelBuilder.Entity<DomainBlacklist>(entity =>
+            {
+                entity.ToTable("DomainBlacklist");
+
+                entity.Property(e => e.Id).HasColumnName("id");
+
+                entity.Property(e => e.DomainName)
+                    .HasMaxLength(100)
+                    .IsUnicode(false)
+                    .HasColumnName("domain_name");
+            });
+
             modelBuilder.Entity<Freeway>(entity =>
             {
                 entity.ToTable("Freeway");
@@ -403,6 +453,34 @@ namespace AutoTagBackEnd.Models
                     .HasMaxLength(50)
                     .IsUnicode(false)
                     .HasColumnName("name");
+            });
+
+            modelBuilder.Entity<PeopleTransit>(entity =>
+            {
+                entity.ToTable("PeopleTransit");
+
+                entity.Property(e => e.Id).HasColumnName("id");
+
+                entity.Property(e => e.EndTransit)
+                    .HasColumnType("datetime")
+                    .HasColumnName("end_transit");
+
+                entity.Property(e => e.PersonId).HasColumnName("Person_id");
+
+                entity.Property(e => e.StartTransit)
+                    .HasColumnType("datetime")
+                    .HasColumnName("start_transit");
+
+                entity.Property(e => e.VehiclePatent)
+                    .HasMaxLength(10)
+                    .IsUnicode(false)
+                    .HasColumnName("vehicle_patent");
+
+                entity.HasOne(d => d.Person)
+                    .WithMany(p => p.PeopleTransits)
+                    .HasForeignKey(d => d.PersonId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_PeopleTransit_Person");
             });
 
             modelBuilder.Entity<Person>(entity =>

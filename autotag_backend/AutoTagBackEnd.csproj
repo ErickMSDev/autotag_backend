@@ -20,6 +20,7 @@
     <PackageReference Include="AutoMapper.Extensions.Microsoft.DependencyInjection" Version="11.0.0" />
     <PackageReference Include="Microsoft.Identity.Client" Version="4.43.0" />
     <PackageReference Include="Microsoft.PowerBI.Api" Version="4.5.0" />
+    <PackageReference Include="RestSharp.Authenticators" Version="1.1.1" />
   </ItemGroup>
 
   <ItemGroup>
@@ -38,6 +39,8 @@
     <None Remove="AppModels\" />
     <None Remove="Microsoft.Identity.Client" />
     <None Remove="Microsoft.PowerBI.Api" />
+    <None Remove="FluentEmail.Mailgun" />
+    <None Remove="RestSharp.Authenticators" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Dto\" />

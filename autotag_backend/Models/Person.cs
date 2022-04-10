@@ -10,6 +10,7 @@ namespace AutoTagBackEnd.Models
     {
         public Person()
         {
+            PeopleTransits = new HashSet<PeopleTransit>();
             VehicleAssignments = new HashSet<VehicleAssignment>();
         }
 
@@ -22,6 +23,7 @@ namespace AutoTagBackEnd.Models
         public bool Enabled { get; set; }
 
         public virtual Account Account { get; set; } = null!;
+        public virtual ICollection<PeopleTransit> PeopleTransits { get; set; }
         public virtual ICollection<VehicleAssignment> VehicleAssignments { get; set; }
     }
 }

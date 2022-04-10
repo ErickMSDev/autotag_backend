@@ -50,9 +50,23 @@ namespace AutoTagBackEnd.Controllers
         [HttpPost]
         public IActionResult Register([FromBody] RegisterRequest body)
         {
-            
+            var response = _userService.RequestRegister(_context, body);
 
-            var response = _userService.Register(_context, body);
+            if (response != null)
+                return Ok(new { error = new[] { new { type = "email", message = response } } });
+
+            return Ok("ok");
+        }
+
+        [HttpGet]
+        public IActionResult ConfirmEmail([FromQuery] ConfirmEmailRequest body)
+        {
+            AccountRequest accountRequest = _context.AccountRequests.Where(ar => ar.Code == body.Code).FirstOrDefault();
+
+            if (accountRequest == null)
+                return Ok(new { error = new[] { new { type = "email", message = "El link no es válido" } } });
+
+            var response = _userService.Register(_context, accountRequest);
 
             if (response == null)
                 return Ok(new { error = new[] { new { type = "email", message = "La cuenta ya existe" } } });
