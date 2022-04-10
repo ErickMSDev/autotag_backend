@@ -59,9 +59,9 @@ namespace AutoTagBackEnd.Controllers
         }
 
         [HttpPost]
-        public IActionResult ConfirmEmail([FromQuery] ConfirmEmailRequest body)
+        public IActionResult ConfirmEmail([FromBody] ConfirmEmailRequest body)
         {
-            AccountRequest accountRequest = _context.AccountRequests.Where(ar => ar.Code == body.Code && ar.Date == DateTime.Today).FirstOrDefault();
+            AccountRequest accountRequest = _context.AccountRequests.Where(ar => ar.Code == body.Token && ar.Date == DateTime.Today).FirstOrDefault();
 
             if (accountRequest == null)
                 return Ok(new { error = new[] { new { type = "email", message = "El link no es válido" } } });

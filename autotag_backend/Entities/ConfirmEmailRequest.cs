@@ -7,7 +7,7 @@ namespace AutoTagBackEnd.Entities
 	public class ConfirmEmailRequest
 	{
 		[Required]
-		public string Code { get; set; }
+		public string Token { get; set; }
 	}
 }
 
