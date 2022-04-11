@@ -97,7 +97,7 @@ namespace AutoTagBackEnd.Services
                 LastName = model.LastName,
                 Email = model.Email,
                 Password = model.Password,
-                Date = DateTime.Today,
+                CreationDate = DateTime.Now,
                 Code = code
             };
             _context.AccountRequests.Add(accountRequest);
@@ -141,6 +141,7 @@ namespace AutoTagBackEnd.Services
                 Password = model.Password,
                 FirstName = model.FirstName.ToLower(),
                 LastName = model.LastName.ToLower(),
+                CreationDate = DateTime.Now,
                 Enabled = true
             };
             _context.Accounts.Add(newAccount);

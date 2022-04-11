@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Globalization;
 using AutoTagBackEnd.Models;
 
 namespace AutoTagBackEnd.Helpers
@@ -22,13 +23,15 @@ namespace AutoTagBackEnd.Helpers
 
         public AuthenticateResponse(Account account, string token)
         {
+            CultureInfo cultureInfo = Thread.CurrentThread.CurrentCulture;
+            TextInfo textInfo = cultureInfo.TextInfo;
             Token = token;
             User = new UserAuthenticateResponse
             {
                 Role = account.Role.Code,
                 Data = new DataAuthenticateResponse
                 {
-                    DisplayName = account.FirstName + " " + account.LastName,
+                    DisplayName = textInfo.ToTitleCase(account.FirstName) + " " + textInfo.ToTitleCase(account.LastName),
                     Email = account.Email
                 }
             };

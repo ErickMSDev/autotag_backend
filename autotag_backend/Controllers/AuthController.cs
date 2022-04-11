@@ -55,13 +55,14 @@ namespace AutoTagBackEnd.Controllers
             if (response != null)
                 return Ok(new { error = new[] { new { type = "email", message = response } } });
 
-            return Ok("ok");
+            return Ok(new { success = true });
         }
 
         [HttpPost]
         public IActionResult ConfirmEmail([FromBody] ConfirmEmailRequest body)
         {
-            AccountRequest accountRequest = _context.AccountRequests.Where(ar => ar.Code == body.Token && ar.Date == DateTime.Today).FirstOrDefault();
+            DateTime minDateAllowed = DateTime.Now.AddHours(-3);
+            AccountRequest accountRequest = _context.AccountRequests.Where(ar => ar.Code == body.Token && ar.CreationDate >= minDateAllowed).FirstOrDefault();
 
             if (accountRequest == null)
                 return Ok(new { error = new[] { new { type = "email", message = "El link no es válido" } } });
