@@ -10,7 +10,7 @@ namespace AutoTagBackEnd.Models
         public string Password { get; set; } = null!;
         public string FirstName { get; set; } = null!;
         public string LastName { get; set; } = null!;
-        public DateTime Date { get; set; }
+        public DateTime CreationDate { get; set; }
         public string Code { get; set; } = null!;
     }
 }

@@ -53,6 +53,10 @@ namespace AutoTagBackEnd.Models
 
                 entity.Property(e => e.Id).HasColumnName("id");
 
+                entity.Property(e => e.CreationDate)
+                    .HasColumnType("datetime")
+                    .HasColumnName("creation_date");
+
                 entity.Property(e => e.Email)
                     .HasMaxLength(100)
                     .IsUnicode(false)
@@ -94,9 +98,9 @@ namespace AutoTagBackEnd.Models
                     .IsUnicode(false)
                     .HasColumnName("code");
 
-                entity.Property(e => e.Date)
-                    .HasColumnType("date")
-                    .HasColumnName("date");
+                entity.Property(e => e.CreationDate)
+                    .HasColumnType("datetime")
+                    .HasColumnName("creation_date");
 
                 entity.Property(e => e.Email)
                     .HasMaxLength(100)

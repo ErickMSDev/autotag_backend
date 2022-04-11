@@ -19,6 +19,7 @@ namespace AutoTagBackEnd.Models
         public string FirstName { get; set; } = null!;
         public string LastName { get; set; } = null!;
         public bool Enabled { get; set; }
+        public DateTime? CreationDate { get; set; }
 
         public virtual Role Role { get; set; } = null!;
         public virtual ICollection<Notification> Notifications { get; set; }
