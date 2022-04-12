@@ -77,25 +77,43 @@ namespace AutoTagBackEnd.Controllers
             return portalAccount;
         }
 
-        public record PortalAccountSaveRequest(int? Id, int PortalId, string Run, string Password, bool Enabled);
+        public record PortalAccountSaveRequest(int? Id, int PortalId, string Run, string Password);
         [Authorize]
         [HttpPost]
-        public PortalAccountDto Save([FromBody] PortalAccountSaveRequest body)
+        public IActionResult Save([FromBody] PortalAccountSaveRequest body)
         {
-            if (string.IsNullOrEmpty(body.Run) || string.IsNullOrEmpty(body.Password))
+            // verificar que vengan los datos
+            if (string.IsNullOrEmpty(body.Run))
             {
-                return null;
+                return Ok(new { error = new[] { new { type = "run", message = "Debes ingresar un rut" } } });
+            }
+            if (string.IsNullOrEmpty(body.Password))
+            {
+                return Ok(new { error = new[] { new { type = "password", message = "Debes ingresar una contraseña" } } });
             }
             int respPortalAccountId;
             if (body.Id == null)
             {
+                // Obtener portal
+                Portal portal = _context.Portals.SingleOrDefault(p => p.Id == body.PortalId);
+                if (portal == null)
+                {
+                    throw new Exception("No existe el portal con id: " + body.PortalId.ToString());
+                }
+                // verificar que no exista otra autopista con el mismo rut
+                if (_context.PortalAccounts.Any(pa => pa.AccountId == this.CurrentAccount.Id && pa.Run == body.Run && pa.PortalId == body.PortalId && !pa.Removed))
+                {
+                    string message = String.Format("Ya existe una credencial de {0} con el rut {1}", portal.Name, body.Run.ToLower());
+                    return Ok(new { error = new[] { new { type = "portalId", message = message } } });
+                }
+                // crear nuevo portalAccount
                 PortalAccount portalAccount = new PortalAccount()
                 {
                     AccountId = this.CurrentAccount.Id,
                     PortalId = body.PortalId,
-                    Run = body.Run,
+                    Run = body.Run.ToLower(),
                     Password = body.Password,
-                    Enabled = body.Enabled,
+                    Enabled = true,
                     HasPendingProcess = true,
                     CreationDate = DateTime.Now
                 };
@@ -111,9 +129,9 @@ namespace AutoTagBackEnd.Controllers
                     throw new Exception("No existe el portalAccount para el id: " + body.Id.ToString());
                 }
                 portalAccount.PortalId = body.PortalId;
-                portalAccount.Run = body.Run;
+                portalAccount.Run = body.Run.ToLower();
                 portalAccount.Password = body.Password;
-                portalAccount.Enabled = body.Enabled;
+                portalAccount.Enabled = true;
                 portalAccount.HasError = false;
                 portalAccount.HasLoginError = false;
                 portalAccount.ErrorMessage = null;
@@ -140,14 +158,14 @@ namespace AutoTagBackEnd.Controllers
                      StatusDescription = PortalAccountHelper.GetStatus(pa).Description
                  }).SingleOrDefault();
 
-            return respPortalAccount;
+            return Ok(respPortalAccount);
         }
 
         public record PortalAccountRemoveMultiplesRequest(int[] Ids);
         [HttpPost]
         public IActionResult RemoveMultiples([FromBody] PortalAccountRemoveMultiplesRequest body)
         {
-            List<PortalAccount> listPortalAccount = _context.PortalAccounts.Where(p => body.Ids.Contains(p.Id)).ToList();
+            List<PortalAccount> listPortalAccount = _context.PortalAccounts.Where(p => body.Ids.Contains(p.Id) && p.AccountId == this.CurrentAccount.Id).ToList();
             listPortalAccount.ForEach(p => {
                 p.Removed = true;
                 p.DeletionDate = DateTime.Now;
@@ -161,7 +179,7 @@ namespace AutoTagBackEnd.Controllers
         [HttpPost]
         public IActionResult Remove([FromBody] PortalAccountRemoveRequest body)
         {
-            PortalAccount portalAccount = _context.PortalAccounts.Where(p => p.Id == body.Id).SingleOrDefault();
+            PortalAccount portalAccount = _context.PortalAccounts.Where(p => p.Id == body.Id && p.AccountId == this.CurrentAccount.Id).SingleOrDefault();
             if (portalAccount != null)
             {
                 portalAccount.Removed = true;
