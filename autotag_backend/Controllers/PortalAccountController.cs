@@ -157,6 +157,9 @@ namespace AutoTagBackEnd.Controllers
                 portalAccount.Enabled = true;
                 portalAccount.HasError = false;
                 portalAccount.HasLoginError = false;
+                portalAccount.HasCaptchaError = false;
+                portalAccount.HasCredentialsError = false;
+                portalAccount.HasFirstSuccessfulProcess = false;
                 portalAccount.ErrorMessage = null;
                 _context.SaveChanges();
                 respPortalAccountId = portalAccount.Id;

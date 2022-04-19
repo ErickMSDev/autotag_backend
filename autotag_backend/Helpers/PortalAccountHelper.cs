@@ -12,6 +12,8 @@ namespace AutoTagBackEnd.Helpers
 			{
 				new PortalAccountStatus("active", "Activo", "Descargado correctamente"),
 				new PortalAccountStatus("error", "Con error", "Error en descarga"),
+				new PortalAccountStatus("error_captcha", "Con error", "Error en descarga"),
+				new PortalAccountStatus("error_credentials", "Sin credenciales", "Sin credenciales"),
 				new PortalAccountStatus("error_login", "Error en credenciales", "Credenciales erroneas"),
 				new PortalAccountStatus("processing", "Procesando", "Se están descargando datos desde el portal"),
 				new PortalAccountStatus("disabled", "Deshabilitado", "Deshabilitado")
@@ -27,7 +29,17 @@ namespace AutoTagBackEnd.Helpers
 				return listPortalAccountStatus.Find(p => p.Code == "processing");
 			}
 
-			if(portalAccount.HasError && portalAccount.HasLoginError)
+			if (portalAccount.HasError && portalAccount.HasCaptchaError)
+			{
+				return listPortalAccountStatus.Find(p => p.Code == "error_captcha");
+			}
+
+			if (portalAccount.HasError && portalAccount.HasCredentialsError)
+			{
+				return listPortalAccountStatus.Find(p => p.Code == "error_credentials");
+			}
+
+			if (portalAccount.HasError && portalAccount.HasLoginError)
             {
 				return listPortalAccountStatus.Find(p => p.Code == "error_login");
 			}

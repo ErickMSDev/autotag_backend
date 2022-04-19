@@ -19,18 +19,28 @@ namespace AutoTagBackEnd.Models
         public virtual DbSet<Account> Accounts { get; set; } = null!;
         public virtual DbSet<AccountRequest> AccountRequests { get; set; } = null!;
         public virtual DbSet<DateDimension> DateDimensions { get; set; } = null!;
+        public virtual DbSet<DiscountCode> DiscountCodes { get; set; } = null!;
+        public virtual DbSet<DiscountCodeType> DiscountCodeTypes { get; set; } = null!;
         public virtual DbSet<Document> Documents { get; set; } = null!;
         public virtual DbSet<DocumentDetail> DocumentDetails { get; set; } = null!;
         public virtual DbSet<DocumentState> DocumentStates { get; set; } = null!;
         public virtual DbSet<DomainBlacklist> DomainBlacklists { get; set; } = null!;
         public virtual DbSet<Freeway> Freeways { get; set; } = null!;
+        public virtual DbSet<Gateway> Gateways { get; set; } = null!;
         public virtual DbSet<Notification> Notifications { get; set; } = null!;
         public virtual DbSet<NotificationType> NotificationTypes { get; set; } = null!;
+        public virtual DbSet<PaymentCycle> PaymentCycles { get; set; } = null!;
         public virtual DbSet<PeopleTransit> PeopleTransits { get; set; } = null!;
         public virtual DbSet<Person> People { get; set; } = null!;
         public virtual DbSet<Portal> Portals { get; set; } = null!;
         public virtual DbSet<PortalAccount> PortalAccounts { get; set; } = null!;
+        public virtual DbSet<Price> Prices { get; set; } = null!;
+        public virtual DbSet<Product> Products { get; set; } = null!;
+        public virtual DbSet<PurchaseOrder> PurchaseOrders { get; set; } = null!;
+        public virtual DbSet<PurchaseOrderDetail> PurchaseOrderDetails { get; set; } = null!;
+        public virtual DbSet<PurchaseOrderState> PurchaseOrderStates { get; set; } = null!;
         public virtual DbSet<Role> Roles { get; set; } = null!;
+        public virtual DbSet<Transaction> Transactions { get; set; } = null!;
         public virtual DbSet<UnbilledTransit> UnbilledTransits { get; set; } = null!;
         public virtual DbSet<VehicleAssignment> VehicleAssignments { get; set; } = null!;
 
@@ -188,6 +198,49 @@ namespace AutoTagBackEnd.Models
                 entity.Property(e => e.TheLastOfYear).HasColumnType("date");
 
                 entity.Property(e => e.TheMonthName).HasMaxLength(30);
+            });
+
+            modelBuilder.Entity<DiscountCode>(entity =>
+            {
+                entity.ToTable("DiscountCode");
+
+                entity.Property(e => e.Id).HasColumnName("id");
+
+                entity.Property(e => e.Code)
+                    .HasMaxLength(50)
+                    .IsUnicode(false)
+                    .HasColumnName("code");
+
+                entity.Property(e => e.IsRecurring).HasColumnName("is_recurring");
+
+                entity.Property(e => e.MaximumUses).HasColumnName("maximum_uses");
+
+                entity.Property(e => e.OnlyNewCustomers).HasColumnName("only_new_customers");
+
+                entity.Property(e => e.PaymentCycleId).HasColumnName("PaymentCycle_id");
+
+                entity.Property(e => e.ProductId).HasColumnName("Product_id");
+
+                entity.Property(e => e.Value)
+                    .HasColumnType("decimal(12, 2)")
+                    .HasColumnName("value");
+            });
+
+            modelBuilder.Entity<DiscountCodeType>(entity =>
+            {
+                entity.ToTable("DiscountCodeType");
+
+                entity.Property(e => e.Id).HasColumnName("id");
+
+                entity.Property(e => e.Code)
+                    .HasMaxLength(50)
+                    .IsUnicode(false)
+                    .HasColumnName("code");
+
+                entity.Property(e => e.Name)
+                    .HasMaxLength(50)
+                    .IsUnicode(false)
+                    .HasColumnName("name");
             });
 
             modelBuilder.Entity<Document>(entity =>
@@ -398,6 +451,57 @@ namespace AutoTagBackEnd.Models
                     .HasConstraintName("FK_Freeway_Portal");
             });
 
+            modelBuilder.Entity<Gateway>(entity =>
+            {
+                entity.ToTable("Gateway");
+
+                entity.Property(e => e.Id).HasColumnName("id");
+
+                entity.Property(e => e.ApiKeyDev)
+                    .HasMaxLength(100)
+                    .IsUnicode(false)
+                    .HasColumnName("api_key_dev");
+
+                entity.Property(e => e.ApiKeyProd)
+                    .HasMaxLength(100)
+                    .IsUnicode(false)
+                    .HasColumnName("api_key_prod");
+
+                entity.Property(e => e.Code)
+                    .HasMaxLength(50)
+                    .IsUnicode(false)
+                    .HasColumnName("code");
+
+                entity.Property(e => e.DebtCollectorIdDev)
+                    .HasMaxLength(100)
+                    .IsUnicode(false)
+                    .HasColumnName("debt_collector_id_dev");
+
+                entity.Property(e => e.DebtCollectorIdProd)
+                    .HasMaxLength(100)
+                    .IsUnicode(false)
+                    .HasColumnName("debt_collector_id_prod");
+
+                entity.Property(e => e.Enabled).HasColumnName("enabled");
+
+                entity.Property(e => e.Name)
+                    .HasMaxLength(50)
+                    .IsUnicode(false)
+                    .HasColumnName("name");
+
+                entity.Property(e => e.SecretKeyDev)
+                    .HasMaxLength(100)
+                    .IsUnicode(false)
+                    .HasColumnName("secret_key_dev");
+
+                entity.Property(e => e.SecretKeyProd)
+                    .HasMaxLength(100)
+                    .IsUnicode(false)
+                    .HasColumnName("secret_key_prod");
+
+                entity.Property(e => e.UseDevelopmentData).HasColumnName("use_development_data");
+            });
+
             modelBuilder.Entity<Notification>(entity =>
             {
                 entity.ToTable("Notification");
@@ -445,6 +549,23 @@ namespace AutoTagBackEnd.Models
 
                 entity.HasIndex(e => e.Code, "IX_NotificationType")
                     .IsUnique();
+
+                entity.Property(e => e.Id).HasColumnName("id");
+
+                entity.Property(e => e.Code)
+                    .HasMaxLength(50)
+                    .IsUnicode(false)
+                    .HasColumnName("code");
+
+                entity.Property(e => e.Name)
+                    .HasMaxLength(50)
+                    .IsUnicode(false)
+                    .HasColumnName("name");
+            });
+
+            modelBuilder.Entity<PaymentCycle>(entity =>
+            {
+                entity.ToTable("PaymentCycle");
 
                 entity.Property(e => e.Id).HasColumnName("id");
 
@@ -570,7 +691,13 @@ namespace AutoTagBackEnd.Models
                     .IsUnicode(false)
                     .HasColumnName("error_message");
 
+                entity.Property(e => e.HasCaptchaError).HasColumnName("has_captcha_error");
+
+                entity.Property(e => e.HasCredentialsError).HasColumnName("has_credentials_error");
+
                 entity.Property(e => e.HasError).HasColumnName("has_error");
+
+                entity.Property(e => e.HasFirstSuccessfulProcess).HasColumnName("has_first_successful_process");
 
                 entity.Property(e => e.HasLoginError).HasColumnName("has_login_error");
 
@@ -610,6 +737,117 @@ namespace AutoTagBackEnd.Models
                     .HasConstraintName("FK__PortalAcc__Porta__6EF57B66");
             });
 
+            modelBuilder.Entity<Price>(entity =>
+            {
+                entity.ToTable("Price");
+
+                entity.Property(e => e.Id).HasColumnName("id");
+
+                entity.Property(e => e.Amount)
+                    .HasColumnType("decimal(12, 2)")
+                    .HasColumnName("amount");
+
+                entity.Property(e => e.DiscountText)
+                    .HasMaxLength(100)
+                    .IsUnicode(false)
+                    .HasColumnName("discount_text");
+
+                entity.Property(e => e.Enabled).HasColumnName("enabled");
+
+                entity.Property(e => e.PaymentCycleId).HasColumnName("PaymentCycle_id");
+
+                entity.Property(e => e.ProductId).HasColumnName("Product_id");
+            });
+
+            modelBuilder.Entity<Product>(entity =>
+            {
+                entity.ToTable("Product");
+
+                entity.Property(e => e.Id).HasColumnName("id");
+
+                entity.Property(e => e.Code)
+                    .HasMaxLength(50)
+                    .IsUnicode(false)
+                    .HasColumnName("code");
+
+                entity.Property(e => e.Description)
+                    .HasMaxLength(500)
+                    .IsUnicode(false)
+                    .HasColumnName("description");
+
+                entity.Property(e => e.Enabled).HasColumnName("enabled");
+
+                entity.Property(e => e.IsComplement).HasColumnName("is_complement");
+
+                entity.Property(e => e.Name)
+                    .HasMaxLength(100)
+                    .IsUnicode(false)
+                    .HasColumnName("name");
+
+                entity.Property(e => e.Order).HasColumnName("order");
+
+                entity.Property(e => e.ParentProductId).HasColumnName("parent_product_id");
+            });
+
+            modelBuilder.Entity<PurchaseOrder>(entity =>
+            {
+                entity.ToTable("PurchaseOrder");
+
+                entity.Property(e => e.Id).HasColumnName("id");
+
+                entity.Property(e => e.AccountId).HasColumnName("Account_id");
+
+                entity.Property(e => e.Amount)
+                    .HasColumnType("decimal(12, 2)")
+                    .HasColumnName("amount");
+
+                entity.Property(e => e.AmountWithoutDiscount)
+                    .HasColumnType("decimal(12, 2)")
+                    .HasColumnName("amount_without_discount");
+
+                entity.Property(e => e.CreationDate)
+                    .HasColumnType("datetime")
+                    .HasColumnName("creation_date");
+
+                entity.Property(e => e.DiscountCodeId).HasColumnName("DiscountCode_id");
+
+                entity.Property(e => e.PurchaseOrderStateId).HasColumnName("PurchaseOrderState_id");
+            });
+
+            modelBuilder.Entity<PurchaseOrderDetail>(entity =>
+            {
+                entity.ToTable("PurchaseOrderDetail");
+
+                entity.Property(e => e.Id).HasColumnName("id");
+
+                entity.Property(e => e.Amount)
+                    .HasColumnType("decimal(12, 2)")
+                    .HasColumnName("amount");
+
+                entity.Property(e => e.PaymentCycleId).HasColumnName("PaymentCycle_id");
+
+                entity.Property(e => e.ProductId).HasColumnName("Product_id");
+
+                entity.Property(e => e.PurchaseOrderId).HasColumnName("PurchaseOrder_id");
+            });
+
+            modelBuilder.Entity<PurchaseOrderState>(entity =>
+            {
+                entity.ToTable("PurchaseOrderState");
+
+                entity.Property(e => e.Id).HasColumnName("id");
+
+                entity.Property(e => e.Code)
+                    .HasMaxLength(50)
+                    .IsUnicode(false)
+                    .HasColumnName("code");
+
+                entity.Property(e => e.Name)
+                    .HasMaxLength(50)
+                    .IsUnicode(false)
+                    .HasColumnName("name");
+            });
+
             modelBuilder.Entity<Role>(entity =>
             {
                 entity.ToTable("Role");
@@ -628,6 +866,25 @@ namespace AutoTagBackEnd.Models
                     .HasMaxLength(50)
                     .IsUnicode(false)
                     .HasColumnName("name");
+            });
+
+            modelBuilder.Entity<Transaction>(entity =>
+            {
+                entity.ToTable("Transaction");
+
+                entity.Property(e => e.Id).HasColumnName("id");
+
+                entity.Property(e => e.Amount)
+                    .HasColumnType("decimal(12, 2)")
+                    .HasColumnName("amount");
+
+                entity.Property(e => e.CreationDate)
+                    .HasColumnType("datetime")
+                    .HasColumnName("creation_date");
+
+                entity.Property(e => e.GatewayId).HasColumnName("Gateway_id");
+
+                entity.Property(e => e.PurchaseOrderId).HasColumnName("PurchaseOrder_id");
             });
 
             modelBuilder.Entity<UnbilledTransit>(entity =>
