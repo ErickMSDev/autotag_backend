@@ -128,7 +128,7 @@ namespace AutoTagBackEnd.Services
             // return null if user not found
             if (account != null) return null;
 
-            Role role = _context.Roles.SingleOrDefault(x => x.Code == "user");
+            Role role = _context.Roles.SingleOrDefault(x => x.Code == "demo");
 
             // return null if role not found
             if (role == null) throw new Exception("No se encontró el rol user");

@@ -100,10 +100,21 @@ namespace AutoTagBackEnd.Controllers
                 {
                     throw new Exception("No existe el portal con id: " + body.PortalId.ToString());
                 }
+                if(this.CurrentAccount.Role.Code == "demo")
+                {
+                    // Si es una cuenta demo solo puede tener 3 portal account como máximo
+                    int portalAccountCount = _context.PortalAccounts.Count(pa => pa.AccountId == this.CurrentAccount.Id && !pa.Removed);
+                    if (portalAccountCount >= 3)
+                    {
+                        string message = string.Format("Ya tienes 3 credenciales permitidas como prueba", portal.Name, body.Run.ToLower());
+                        return Ok(new { error = new[] { new { type = "portalId", message = message } } });
+                    }
+                }
+                
                 // verificar que no exista otra autopista con el mismo rut
                 if (_context.PortalAccounts.Any(pa => pa.AccountId == this.CurrentAccount.Id && pa.Run == body.Run && pa.PortalId == body.PortalId && !pa.Removed))
                 {
-                    string message = String.Format("Ya existe una credencial de {0} con el rut {1}", portal.Name, body.Run.ToLower());
+                    string message = string.Format("Ya existe una credencial de {0} con el rut {1}", portal.Name, body.Run.ToLower());
                     return Ok(new { error = new[] { new { type = "portalId", message = message } } });
                 }
                 // crear nuevo portalAccount
