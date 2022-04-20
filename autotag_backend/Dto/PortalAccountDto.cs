@@ -9,7 +9,6 @@ namespace AutoTagBackEnd.Dto
         public string PortalName { get; set; } = null!;
         public string Run { get; set; } = null!;
         public string Password { get; set; } = null!;
-        public bool Enabled { get; set; }
         public string StatusCode { get; set; } = null!;
         public string StatusName { get; set; } = null!;
         public string StatusDescription { get; set; } = null!;

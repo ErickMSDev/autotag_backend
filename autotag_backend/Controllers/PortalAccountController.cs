@@ -29,7 +29,9 @@ namespace AutoTagBackEnd.Controllers
         {
             List<PortalAccountDto> listPortalAccount =
                 (from pa in _context.PortalAccounts
-                where
+                 join pas in _context.PortalAccountStatuses
+                 on pa.PortalAccountStatusId equals pas.Id
+                 where
                     pa.AccountId == this.CurrentAccount.Id
                     && !pa.Removed
                 select new PortalAccountDto
@@ -40,10 +42,9 @@ namespace AutoTagBackEnd.Controllers
                     PortalName = pa.Portal.Name,
                     Run = pa.Run,
                     Password = pa.Password,
-                    Enabled = pa.Enabled,
-                    StatusCode = PortalAccountHelper.GetStatus(pa).Code,
-                    StatusName = PortalAccountHelper.GetStatus(pa).Name,
-                    StatusDescription = PortalAccountHelper.GetStatus(pa).Description
+                    StatusCode = pas.Code,
+                    StatusName = pas.Name,
+                    StatusDescription = pas.Description
                 }).ToList();
 
             return listPortalAccount;
@@ -56,6 +57,8 @@ namespace AutoTagBackEnd.Controllers
         {
             PortalAccountDto portalAccount =
                 (from pa in _context.PortalAccounts
+                 join pas in _context.PortalAccountStatuses
+                 on pa.PortalAccountStatusId equals pas.Id
                  where
                      pa.AccountId == this.CurrentAccount.Id
                      && !pa.Removed
@@ -68,10 +71,9 @@ namespace AutoTagBackEnd.Controllers
                      PortalName = pa.Portal.Name,
                      Run = pa.Run,
                      Password = pa.Password,
-                     Enabled = pa.Enabled,
-                     StatusCode = PortalAccountHelper.GetStatus(pa).Code,
-                     StatusName = PortalAccountHelper.GetStatus(pa).Name,
-                     StatusDescription = PortalAccountHelper.GetStatus(pa).Description
+                     StatusCode = pas.Code,
+                     StatusName = pas.Name,
+                     StatusDescription = pas.Description
                  }).SingleOrDefault();
 
             return portalAccount;
@@ -90,6 +92,11 @@ namespace AutoTagBackEnd.Controllers
             if (string.IsNullOrEmpty(body.Password))
             {
                 return Ok(new { error = new[] { new { type = "password", message = "Debes ingresar una contraseña" } } });
+            }
+            PortalAccountStatus enabledStatus = _context.PortalAccountStatuses.SingleOrDefault(pas => pas.Code == "active");
+            if (enabledStatus == null)
+            {
+                throw new Exception("No existe el PortalAccountStatus para el código: active");
             }
             int respPortalAccountId;
             if (body.Id == null)
@@ -124,7 +131,7 @@ namespace AutoTagBackEnd.Controllers
                     PortalId = body.PortalId,
                     Run = body.Run.ToLower(),
                     Password = body.Password,
-                    Enabled = true,
+                    PortalAccountStatusId = enabledStatus.Id,
                     HasPendingProcess = true,
                     CreationDate = DateTime.Now
                 };
@@ -154,11 +161,7 @@ namespace AutoTagBackEnd.Controllers
                 portalAccount.PortalId = body.PortalId;
                 portalAccount.Run = body.Run.ToLower();
                 portalAccount.Password = body.Password;
-                portalAccount.Enabled = true;
-                portalAccount.HasError = false;
-                portalAccount.HasLoginError = false;
-                portalAccount.HasCaptchaError = false;
-                portalAccount.HasCredentialsError = false;
+                portalAccount.PortalAccountStatusId = enabledStatus.Id;
                 portalAccount.HasFirstSuccessfulProcess = false;
                 portalAccount.ErrorMessage = null;
                 _context.SaveChanges();
@@ -178,10 +181,9 @@ namespace AutoTagBackEnd.Controllers
                      PortalName = pa.Portal.Name,
                      Run = pa.Run,
                      Password = pa.Password,
-                     Enabled = pa.Enabled,
-                     StatusCode = PortalAccountHelper.GetStatus(pa).Code,
-                     StatusName = PortalAccountHelper.GetStatus(pa).Name,
-                     StatusDescription = PortalAccountHelper.GetStatus(pa).Description
+                     StatusCode = enabledStatus.Code,
+                     StatusName = enabledStatus.Name,
+                     StatusDescription = enabledStatus.Description
                  }).SingleOrDefault();
 
             return Ok(respPortalAccount);

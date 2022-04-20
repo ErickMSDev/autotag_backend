@@ -16,17 +16,12 @@ namespace AutoTagBackEnd.Models
         public int PortalId { get; set; }
         public string Run { get; set; } = null!;
         public string Password { get; set; } = null!;
-        public bool Enabled { get; set; }
+        public int PortalAccountStatusId { get; set; }
         public bool Removed { get; set; }
         public bool HasPendingProcess { get; set; }
         public DateTime CreationDate { get; set; }
         public DateTime? DeletionDate { get; set; }
-        public bool IsBeingProcessed { get; set; }
         public bool HasFirstSuccessfulProcess { get; set; }
-        public bool HasError { get; set; }
-        public bool HasLoginError { get; set; }
-        public bool HasCaptchaError { get; set; }
-        public bool HasCredentialsError { get; set; }
         public string? ErrorMessage { get; set; }
         public byte[] RowVersion { get; set; } = null!;
 

@@ -34,6 +34,7 @@ namespace AutoTagBackEnd.Models
         public virtual DbSet<Person> People { get; set; } = null!;
         public virtual DbSet<Portal> Portals { get; set; } = null!;
         public virtual DbSet<PortalAccount> PortalAccounts { get; set; } = null!;
+        public virtual DbSet<PortalAccountStatus> PortalAccountStatuses { get; set; } = null!;
         public virtual DbSet<Price> Prices { get; set; } = null!;
         public virtual DbSet<Product> Products { get; set; } = null!;
         public virtual DbSet<PurchaseOrder> PurchaseOrders { get; set; } = null!;
@@ -685,30 +686,20 @@ namespace AutoTagBackEnd.Models
                     .HasColumnType("datetime")
                     .HasColumnName("deletion_date");
 
-                entity.Property(e => e.Enabled).HasColumnName("enabled");
-
                 entity.Property(e => e.ErrorMessage)
                     .IsUnicode(false)
                     .HasColumnName("error_message");
 
-                entity.Property(e => e.HasCaptchaError).HasColumnName("has_captcha_error");
-
-                entity.Property(e => e.HasCredentialsError).HasColumnName("has_credentials_error");
-
-                entity.Property(e => e.HasError).HasColumnName("has_error");
-
                 entity.Property(e => e.HasFirstSuccessfulProcess).HasColumnName("has_first_successful_process");
 
-                entity.Property(e => e.HasLoginError).HasColumnName("has_login_error");
-
                 entity.Property(e => e.HasPendingProcess).HasColumnName("has_pending_process");
-
-                entity.Property(e => e.IsBeingProcessed).HasColumnName("is_being_processed");
 
                 entity.Property(e => e.Password)
                     .HasMaxLength(50)
                     .IsUnicode(false)
                     .HasColumnName("password");
+
+                entity.Property(e => e.PortalAccountStatusId).HasColumnName("PortalAccountStatus_id");
 
                 entity.Property(e => e.PortalId).HasColumnName("Portal_id");
 
@@ -735,6 +726,28 @@ namespace AutoTagBackEnd.Models
                     .HasForeignKey(d => d.PortalId)
                     .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("FK__PortalAcc__Porta__6EF57B66");
+            });
+
+            modelBuilder.Entity<PortalAccountStatus>(entity =>
+            {
+                entity.ToTable("PortalAccountStatus");
+
+                entity.Property(e => e.Id).HasColumnName("id");
+
+                entity.Property(e => e.Code)
+                    .HasMaxLength(50)
+                    .IsUnicode(false)
+                    .HasColumnName("code");
+
+                entity.Property(e => e.Description)
+                    .HasMaxLength(500)
+                    .IsUnicode(false)
+                    .HasColumnName("description");
+
+                entity.Property(e => e.Name)
+                    .HasMaxLength(50)
+                    .IsUnicode(false)
+                    .HasColumnName("name");
             });
 
             modelBuilder.Entity<Price>(entity =>
