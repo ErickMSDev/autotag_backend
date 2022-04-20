@@ -686,6 +686,8 @@ namespace AutoTagBackEnd.Models
                     .HasColumnType("datetime")
                     .HasColumnName("deletion_date");
 
+                entity.Property(e => e.ErrorMailAlreadySent).HasColumnName("error_mail_already_sent");
+
                 entity.Property(e => e.ErrorMessage)
                     .IsUnicode(false)
                     .HasColumnName("error_message");

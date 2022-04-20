@@ -23,6 +23,7 @@ namespace AutoTagBackEnd.Models
         public DateTime? DeletionDate { get; set; }
         public bool HasFirstSuccessfulProcess { get; set; }
         public string? ErrorMessage { get; set; }
+        public bool ErrorMailAlreadySent { get; set; }
         public byte[] RowVersion { get; set; } = null!;
 
         public virtual Account Account { get; set; } = null!;

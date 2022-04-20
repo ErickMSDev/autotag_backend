@@ -133,6 +133,7 @@ namespace AutoTagBackEnd.Controllers
                     Password = body.Password,
                     PortalAccountStatusId = enabledStatus.Id,
                     HasPendingProcess = true,
+                    ErrorMailAlreadySent = false,
                     CreationDate = DateTime.Now
                 };
                 _context.PortalAccounts.Add(portalAccount);
@@ -163,6 +164,7 @@ namespace AutoTagBackEnd.Controllers
                 portalAccount.Password = body.Password;
                 portalAccount.PortalAccountStatusId = enabledStatus.Id;
                 portalAccount.HasFirstSuccessfulProcess = false;
+                portalAccount.ErrorMailAlreadySent = false;
                 portalAccount.ErrorMessage = null;
                 _context.SaveChanges();
                 respPortalAccountId = portalAccount.Id;
