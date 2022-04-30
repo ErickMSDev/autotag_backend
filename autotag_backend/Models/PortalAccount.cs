@@ -28,6 +28,7 @@ namespace AutoTagBackEnd.Models
 
         public virtual Account Account { get; set; } = null!;
         public virtual Portal Portal { get; set; } = null!;
+        public virtual PortalAccountStatus PortalAccountStatus { get; set; } = null!;
         public virtual ICollection<Document> Documents { get; set; }
         public virtual ICollection<UnbilledTransit> UnbilledTransits { get; set; }
     }

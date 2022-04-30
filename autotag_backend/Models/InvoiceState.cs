@@ -3,11 +3,17 @@ using System.Collections.Generic;
 
 namespace AutoTagBackEnd.Models
 {
-    public partial class PaymentCycle
+    public partial class InvoiceState
     {
+        public InvoiceState()
+        {
+            Invoices = new HashSet<Invoice>();
+        }
+
         public int Id { get; set; }
         public string Code { get; set; } = null!;
         public string Name { get; set; } = null!;
-        public string? Represents { get; set; }
+
+        public virtual ICollection<Invoice> Invoices { get; set; }
     }
 }

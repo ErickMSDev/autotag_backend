@@ -10,6 +10,7 @@ namespace AutoTagBackEnd.Models
             Notifications = new HashSet<Notification>();
             People = new HashSet<Person>();
             PortalAccounts = new HashSet<PortalAccount>();
+            PurchaseOrders = new HashSet<PurchaseOrder>();
         }
 
         public int Id { get; set; }
@@ -19,11 +20,13 @@ namespace AutoTagBackEnd.Models
         public string FirstName { get; set; } = null!;
         public string LastName { get; set; } = null!;
         public bool Enabled { get; set; }
-        public DateTime? CreationDate { get; set; }
+        public DateTime CreationDate { get; set; }
+        public bool UseDevelopmentPurchaseData { get; set; }
 
         public virtual Role Role { get; set; } = null!;
         public virtual ICollection<Notification> Notifications { get; set; }
         public virtual ICollection<Person> People { get; set; }
         public virtual ICollection<PortalAccount> PortalAccounts { get; set; }
+        public virtual ICollection<PurchaseOrder> PurchaseOrders { get; set; }
     }
 }

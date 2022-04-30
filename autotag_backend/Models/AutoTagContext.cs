@@ -27,6 +27,9 @@ namespace AutoTagBackEnd.Models
         public virtual DbSet<DomainBlacklist> DomainBlacklists { get; set; } = null!;
         public virtual DbSet<Freeway> Freeways { get; set; } = null!;
         public virtual DbSet<Gateway> Gateways { get; set; } = null!;
+        public virtual DbSet<Invoice> Invoices { get; set; } = null!;
+        public virtual DbSet<InvoiceDetail> InvoiceDetails { get; set; } = null!;
+        public virtual DbSet<InvoiceState> InvoiceStates { get; set; } = null!;
         public virtual DbSet<Notification> Notifications { get; set; } = null!;
         public virtual DbSet<NotificationType> NotificationTypes { get; set; } = null!;
         public virtual DbSet<PaymentCycle> PaymentCycles { get; set; } = null!;
@@ -42,6 +45,7 @@ namespace AutoTagBackEnd.Models
         public virtual DbSet<PurchaseOrderState> PurchaseOrderStates { get; set; } = null!;
         public virtual DbSet<Role> Roles { get; set; } = null!;
         public virtual DbSet<Transaction> Transactions { get; set; } = null!;
+        public virtual DbSet<TransactionState> TransactionStates { get; set; } = null!;
         public virtual DbSet<UnbilledTransit> UnbilledTransits { get; set; } = null!;
         public virtual DbSet<VehicleAssignment> VehicleAssignments { get; set; } = null!;
 
@@ -91,6 +95,8 @@ namespace AutoTagBackEnd.Models
                     .HasColumnName("password");
 
                 entity.Property(e => e.RoleId).HasColumnName("Role_id");
+
+                entity.Property(e => e.UseDevelopmentPurchaseData).HasColumnName("use_development_purchase_data");
 
                 entity.HasOne(d => d.Role)
                     .WithMany(p => p.Accounts)
@@ -490,6 +496,18 @@ namespace AutoTagBackEnd.Models
                     .IsUnicode(false)
                     .HasColumnName("name");
 
+                entity.Property(e => e.PaymentMethod).HasColumnName("payment_method");
+
+                entity.Property(e => e.RestApiUrlDev)
+                    .HasMaxLength(200)
+                    .IsUnicode(false)
+                    .HasColumnName("rest_api_url_dev");
+
+                entity.Property(e => e.RestApiUrlProd)
+                    .HasMaxLength(200)
+                    .IsUnicode(false)
+                    .HasColumnName("rest_api_url_prod");
+
                 entity.Property(e => e.SecretKeyDev)
                     .HasMaxLength(100)
                     .IsUnicode(false)
@@ -500,7 +518,100 @@ namespace AutoTagBackEnd.Models
                     .IsUnicode(false)
                     .HasColumnName("secret_key_prod");
 
+                entity.Property(e => e.UrlConfirmation)
+                    .HasMaxLength(200)
+                    .IsUnicode(false)
+                    .HasColumnName("url_confirmation");
+
+                entity.Property(e => e.UrlReturn)
+                    .HasMaxLength(200)
+                    .IsUnicode(false)
+                    .HasColumnName("url_return");
+
                 entity.Property(e => e.UseDevelopmentData).HasColumnName("use_development_data");
+            });
+
+            modelBuilder.Entity<Invoice>(entity =>
+            {
+                entity.ToTable("Invoice");
+
+                entity.Property(e => e.Id).HasColumnName("id");
+
+                entity.Property(e => e.Amount)
+                    .HasColumnType("decimal(12, 2)")
+                    .HasColumnName("amount");
+
+                entity.Property(e => e.Code)
+                    .HasMaxLength(50)
+                    .IsUnicode(false)
+                    .HasColumnName("code");
+
+                entity.Property(e => e.CreationDate)
+                    .HasColumnType("datetime")
+                    .HasColumnName("creation_date");
+
+                entity.Property(e => e.DueDate)
+                    .HasColumnType("datetime")
+                    .HasColumnName("due_date");
+
+                entity.Property(e => e.InvoiceStateId).HasColumnName("InvoiceState_id");
+
+                entity.Property(e => e.PurchaseOrderId).HasColumnName("PurchaseOrder_id");
+
+                entity.HasOne(d => d.InvoiceState)
+                    .WithMany(p => p.Invoices)
+                    .HasForeignKey(d => d.InvoiceStateId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_Invoice_InvoiceState");
+
+                entity.HasOne(d => d.PurchaseOrder)
+                    .WithMany(p => p.Invoices)
+                    .HasForeignKey(d => d.PurchaseOrderId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_Invoice_PurchaseOrder");
+            });
+
+            modelBuilder.Entity<InvoiceDetail>(entity =>
+            {
+                entity.ToTable("InvoiceDetail");
+
+                entity.Property(e => e.Id).HasColumnName("id");
+
+                entity.Property(e => e.Amount)
+                    .HasColumnType("decimal(12, 2)")
+                    .HasColumnName("amount");
+
+                entity.Property(e => e.Description)
+                    .HasMaxLength(100)
+                    .IsUnicode(false)
+                    .HasColumnName("description");
+
+                entity.Property(e => e.InvoiceId).HasColumnName("Invoice_id");
+
+                entity.Property(e => e.Quantity).HasColumnName("quantity");
+
+                entity.HasOne(d => d.Invoice)
+                    .WithMany(p => p.InvoiceDetails)
+                    .HasForeignKey(d => d.InvoiceId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_InvoiceDetail_Invoice");
+            });
+
+            modelBuilder.Entity<InvoiceState>(entity =>
+            {
+                entity.ToTable("InvoiceState");
+
+                entity.Property(e => e.Id).HasColumnName("id");
+
+                entity.Property(e => e.Code)
+                    .HasMaxLength(50)
+                    .IsUnicode(false)
+                    .HasColumnName("code");
+
+                entity.Property(e => e.Name)
+                    .HasMaxLength(50)
+                    .IsUnicode(false)
+                    .HasColumnName("name");
             });
 
             modelBuilder.Entity<Notification>(entity =>
@@ -579,6 +690,11 @@ namespace AutoTagBackEnd.Models
                     .HasMaxLength(50)
                     .IsUnicode(false)
                     .HasColumnName("name");
+
+                entity.Property(e => e.Represents)
+                    .HasMaxLength(50)
+                    .IsUnicode(false)
+                    .HasColumnName("represents");
             });
 
             modelBuilder.Entity<PeopleTransit>(entity =>
@@ -723,6 +839,12 @@ namespace AutoTagBackEnd.Models
                     .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("FK__PortalAcc__Accou__6FE99F9F");
 
+                entity.HasOne(d => d.PortalAccountStatus)
+                    .WithMany(p => p.PortalAccounts)
+                    .HasForeignKey(d => d.PortalAccountStatusId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_PortalAccount_PortalAccountStatus");
+
                 entity.HasOne(d => d.Portal)
                     .WithMany(p => p.PortalAccounts)
                     .HasForeignKey(d => d.PortalId)
@@ -826,7 +948,22 @@ namespace AutoTagBackEnd.Models
 
                 entity.Property(e => e.DiscountCodeId).HasColumnName("DiscountCode_id");
 
+                entity.Property(e => e.NextDueDate)
+                    .HasColumnType("datetime")
+                    .HasColumnName("next_due_date");
+
                 entity.Property(e => e.PurchaseOrderStateId).HasColumnName("PurchaseOrderState_id");
+
+                entity.HasOne(d => d.Account)
+                    .WithMany(p => p.PurchaseOrders)
+                    .HasForeignKey(d => d.AccountId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_PurchaseOrder_Account");
+
+                entity.HasOne(d => d.DiscountCode)
+                    .WithMany(p => p.PurchaseOrders)
+                    .HasForeignKey(d => d.DiscountCodeId)
+                    .HasConstraintName("FK_PurchaseOrder_DiscountCode");
             });
 
             modelBuilder.Entity<PurchaseOrderDetail>(entity =>
@@ -899,7 +1036,59 @@ namespace AutoTagBackEnd.Models
 
                 entity.Property(e => e.GatewayId).HasColumnName("Gateway_id");
 
-                entity.Property(e => e.PurchaseOrderId).HasColumnName("PurchaseOrder_id");
+                entity.Property(e => e.GatewayOrder).HasColumnName("gateway_order");
+
+                entity.Property(e => e.GatewayPaymentMethod).HasColumnName("gateway_payment_method");
+
+                entity.Property(e => e.GatewayToken)
+                    .HasMaxLength(100)
+                    .IsUnicode(false)
+                    .HasColumnName("gateway_token");
+
+                entity.Property(e => e.InvoiceId).HasColumnName("Invoice_id");
+
+                entity.Property(e => e.IsDevelopment).HasColumnName("is_development");
+
+                entity.Property(e => e.PaymentDate)
+                    .HasColumnType("datetime")
+                    .HasColumnName("payment_date");
+
+                entity.Property(e => e.TransactionStateId).HasColumnName("TransactionState_id");
+
+                entity.HasOne(d => d.Gateway)
+                    .WithMany(p => p.Transactions)
+                    .HasForeignKey(d => d.GatewayId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_Transaction_Gateway");
+
+                entity.HasOne(d => d.Invoice)
+                    .WithMany(p => p.Transactions)
+                    .HasForeignKey(d => d.InvoiceId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_Transaction_Invoice");
+
+                entity.HasOne(d => d.TransactionState)
+                    .WithMany(p => p.Transactions)
+                    .HasForeignKey(d => d.TransactionStateId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_Transaction_TransactionState");
+            });
+
+            modelBuilder.Entity<TransactionState>(entity =>
+            {
+                entity.ToTable("TransactionState");
+
+                entity.Property(e => e.Id).HasColumnName("id");
+
+                entity.Property(e => e.Code)
+                    .HasMaxLength(50)
+                    .IsUnicode(false)
+                    .HasColumnName("code");
+
+                entity.Property(e => e.Name)
+                    .HasMaxLength(50)
+                    .IsUnicode(false)
+                    .HasColumnName("name");
             });
 
             modelBuilder.Entity<UnbilledTransit>(entity =>
