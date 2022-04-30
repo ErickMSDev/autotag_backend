@@ -74,34 +74,6 @@ namespace AutoTagBackEnd.Helpers
                 throw new Exception("No se encontró el medio de pago flow");
             }
 
-            //// Obtener tipo de transacción pendinte
-            //TransactionState transactionState = _context.TransactionStates.SingleOrDefault(ts => ts.Code == "pending");
-            //if (transactionState == null)
-            //{
-            //    throw new Exception("No se encontró el estado de transacción pending");
-            //}
-
-            //// Obtener transaccion
-            //Transaction transaction = _context.Transactions.SingleOrDefault
-            //    (t => t.TransactionStateId == transactionState.Id && t.GatewayId == gatewayFlow.Id && t.GatewayToken == token);
-
-            //if (transaction == null)
-            //{
-            //    throw new Exception("No se encontró la transacción con token: " + token);
-            //}
-
-            //Invoice invoice = _context.Invoices.SingleOrDefault(i => i.Id == transaction.InvoiceId);
-            //if (invoice == null)
-            //{
-            //    throw new Exception("No se encontró la factura con id: " + transaction.InvoiceId);
-            //}
-
-            //PurchaseOrder purchaseOrder = _context.PurchaseOrders.SingleOrDefault(p => p.Id == invoice.PurchaseOrderId);
-            //if (purchaseOrder == null)
-            //{
-            //    throw new Exception("No se encontró la orden con id: " + invoice.PurchaseOrderId);
-            //}
-
             bool useDevelopmentData = gatewayFlow.UseDevelopmentData || account.UseDevelopmentPurchaseData;
             string apikey = (useDevelopmentData ? gatewayFlow.ApiKeyDev : gatewayFlow.ApiKeyProd) ?? "error";
             string secretKey = (useDevelopmentData ? gatewayFlow.SecretKeyDev : gatewayFlow.SecretKeyProd) ?? "error";
