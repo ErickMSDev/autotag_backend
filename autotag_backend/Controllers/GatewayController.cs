@@ -316,8 +316,9 @@ namespace AutoTagBackEnd.Controllers
             return Redirect(urlReturn);
         }
 
+        public record FlowGetStatusRequest(string Token);
         [HttpPost]
-        public ActionResult FlowGetStatus([FromBody] string token)
+        public ActionResult FlowGetStatus([FromBody] FlowGetStatusRequest body)
         {
             Gateway gatewayFlow = _context.Gateways.SingleOrDefault(g => g.Code == "flow" && g.Enabled);
             if (gatewayFlow == null)
@@ -337,7 +338,7 @@ namespace AutoTagBackEnd.Controllers
                 join r in _context.Roles
                 on a.RoleId equals r.Id
                 where
-                    t.GatewayToken == token &&
+                    t.GatewayToken == body.Token &&
                     o.AccountId == this.CurrentAccount.Id &&
                     t.GatewayId == gatewayFlow.Id
                 select new
@@ -349,7 +350,7 @@ namespace AutoTagBackEnd.Controllers
 
             if(data == null)
             {
-                return Ok(new { CurrentAccountId = this.CurrentAccount.Id, Token = token });
+                return Ok(new { CurrentAccountId = this.CurrentAccount.Id, Token = body.Token });
             }
 
             return Ok(new { TransitionStateCode = data.TransactionStateCode, AccountRoleCode = data.TransactionStateCode });
