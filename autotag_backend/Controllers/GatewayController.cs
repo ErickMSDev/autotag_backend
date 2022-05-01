@@ -312,7 +312,7 @@ namespace AutoTagBackEnd.Controllers
             {
                 throw new Exception("No se encontró la url de retorno para flow");
             }
-            string urlReturn = string.Format("{0}?token={1}", gatewayFlow.UrlReturn, token);
+            string urlReturn = string.Format("{0}/{1}", gatewayFlow.UrlReturn, token);
             return Redirect(urlReturn);
         }
 
