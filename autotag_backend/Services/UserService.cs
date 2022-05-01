@@ -134,7 +134,7 @@ namespace AutoTagBackEnd.Services
             if (role == null) throw new Exception("No se encontró el rol user");
 
 
-            Account newAccount = new Account()
+            Account newAccount = new()
             {
                 RoleId = role.Id,
                 Email = model.Email.ToLower(),

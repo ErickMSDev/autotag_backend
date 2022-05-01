@@ -7,6 +7,7 @@ namespace AutoTagBackEnd.Helpers
     public class UserAuthenticateResponse
     {
         public string? Role { get; set; }
+        public string? RoleName { get; set; }
         public DataAuthenticateResponse? Data { get; set; }
     }
 
@@ -29,6 +30,7 @@ namespace AutoTagBackEnd.Helpers
             User = new UserAuthenticateResponse
             {
                 Role = account.Role.Code,
+                RoleName = account.Role.Name,
                 Data = new DataAuthenticateResponse
                 {
                     DisplayName = textInfo.ToTitleCase(account.FirstName) + " " + textInfo.ToTitleCase(account.LastName),
