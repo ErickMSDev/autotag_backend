@@ -5,7 +5,8 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace AutoTagBackEnd.Controllers
 {
-	public class PurchaseController : AppController
+    [Route("api/[controller]/[action]")]
+    public class PurchaseController : AppController
     {
         private readonly AutoTagContext _context;
 
