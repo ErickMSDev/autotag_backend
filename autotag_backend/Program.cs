@@ -35,7 +35,9 @@ builder.Services.AddCors(options =>
             "http://localhost:8080",
             "https://viasimple.cl",
             "https://www.viasimple.cl",
-            "https://app.viasimple.cl")
+            "https://app.viasimple.cl",
+            "https://sandbox.flow.cl",
+            "https://www.flow.cl")
         .AllowAnyHeader()
         .AllowAnyMethod();
     });

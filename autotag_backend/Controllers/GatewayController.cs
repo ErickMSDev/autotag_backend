@@ -313,7 +313,7 @@ namespace AutoTagBackEnd.Controllers
                 throw new Exception("No se encontró la url de retorno para flow");
             }
             string urlReturn = string.Format("{0}?token={1}", gatewayFlow.UrlReturn, token);
-            return Redirect(gatewayFlow.UrlReturn);
+            return Redirect(urlReturn);
         }
 
         [HttpPost]
@@ -336,7 +336,10 @@ namespace AutoTagBackEnd.Controllers
                 on o.AccountId equals a.Id
                 join r in _context.Roles
                 on a.RoleId equals r.Id
-                where t.GatewayToken == token && o.AccountId == this.CurrentAccount.Id
+                where
+                    t.GatewayToken == token &&
+                    o.AccountId == this.CurrentAccount.Id &&
+                    t.GatewayId == gatewayFlow.Id
                 select new
                 {
                     TransactionStateCode = ts.Code,
@@ -346,7 +349,7 @@ namespace AutoTagBackEnd.Controllers
 
             if(data == null)
             {
-                throw new Exception("No se logró obtener la transacción con el token: " + token);
+                return Ok(new { CurrentAccountId = this.CurrentAccount.Id, Token = token });
             }
 
             return Ok(new { TransitionStateCode = data.TransactionStateCode, AccountRoleCode = data.TransactionStateCode });
