@@ -21,17 +21,16 @@ namespace AutoTagBackEnd.Controllers
 			_context = context;
 		}
 
-        public record FlowConfirmationRequest(string Token);
         [HttpPost]
-        public async Task<ActionResult> FlowConfirmationAsync([FromBody] FlowConfirmationRequest body)
+        public async Task<ActionResult> FlowConfirmation([FromForm] string token)
         {
-            PaymentStatus? paymentStatus = await Flow.GetStatusAsync(_context, body.Token, this.CurrentAccount);
+            PaymentStatus? paymentStatus = await Flow.GetStatusAsync(_context, token, this.CurrentAccount);
 
             if(paymentStatus.Code != null)
             {
                 throw new Exception(String.Format(
                     "Error al leer estado de pago con token {0}, error: {1}, mensaje: {2}",
-                    body.Token, paymentStatus.Code, paymentStatus.Message));
+                    token, paymentStatus.Code, paymentStatus.Message));
             }
 
             List<TransactionState> listTransactionState = _context.TransactionStates.ToList();
@@ -67,7 +66,7 @@ namespace AutoTagBackEnd.Controllers
                     (t => t.TransactionStateId == transactionStatePending.Id &&
                     t.GatewayId == gatewayFlow.Id &&
                     t.GatewayOrder == paymentStatus.flowOrder &&
-                    t.GatewayToken == body.Token);
+                    t.GatewayToken == token);
                 if (transaction == null)
                 {
                     throw new Exception("No se encontró la transacción con codigo flow: " + paymentStatus.flowOrder);
@@ -192,7 +191,7 @@ namespace AutoTagBackEnd.Controllers
                     (t => t.TransactionStateId == transactionStatePending.Id &&
                     t.GatewayId == gatewayFlow.Id &&
                     t.GatewayOrder == paymentStatus.flowOrder &&
-                    t.GatewayToken == body.Token);
+                    t.GatewayToken == token);
                 if (transaction == null)
                 {
                     throw new Exception("No se encontró la transacción con codigo flow: " + paymentStatus.flowOrder);
@@ -257,7 +256,7 @@ namespace AutoTagBackEnd.Controllers
                     (t => t.TransactionStateId == transactionStatePending.Id &&
                     t.GatewayId == gatewayFlow.Id &&
                     t.GatewayOrder == paymentStatus.flowOrder &&
-                    t.GatewayToken == body.Token);
+                    t.GatewayToken == token);
                 if (transaction == null)
                 {
                     throw new Exception("No se encontró la transacción con codigo flow: " + paymentStatus.flowOrder);
