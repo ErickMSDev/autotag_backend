@@ -17,7 +17,7 @@ namespace AutoTagBackEnd.Controllers
 
         public record PurchaseServiceRequest(int ProductId, string DiscountCode, int PaymentCycleId);
         [HttpPost]
-        public async Task<IActionResult> PurchaseServiceAsync([FromBody] PurchaseServiceRequest body)
+        public async Task<IActionResult> PurchaseService([FromBody] PurchaseServiceRequest body)
         {
             // chequear que producto exista y esté habilitado
             bool productExistsAndIsEnabled = _context.Products.Any(p => p.Id == body.ProductId && p.Enabled);
