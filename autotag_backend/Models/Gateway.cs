@@ -25,6 +25,7 @@ namespace AutoTagBackEnd.Models
         public string? RestApiUrlDev { get; set; }
         public int? PaymentMethod { get; set; }
         public string? UrlConfirmation { get; set; }
+        public string? BackendUrlReturn { get; set; }
         public string? UrlReturn { get; set; }
 
         public virtual ICollection<Transaction> Transactions { get; set; }

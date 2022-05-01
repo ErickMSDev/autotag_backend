@@ -55,6 +55,7 @@ namespace AutoTagBackEnd.Controllers
                 Amount = price.Amount,
                 AmountWithoutDiscount = price.Amount
             };
+            _context.PurchaseOrders.Add(purchaseOrder);
             // guardar orden de compra y obtener id
             _context.SaveChanges();
 
@@ -66,6 +67,7 @@ namespace AutoTagBackEnd.Controllers
                 PaymentCycleId = body.PaymentCycleId,
                 Amount = price.Amount
             };
+            _context.PurchaseOrderDetails.Add(purchaseOrderDetail);
 
             // crear factura
             InvoiceState invoiceStatePending = _context.InvoiceStates.SingleOrDefault(i => i.Code == "pending");
@@ -81,6 +83,7 @@ namespace AutoTagBackEnd.Controllers
                 DueDate = DateTime.Today.AddMonths(1),
                 Amount = price.Amount
             };
+            _context.Invoices.Add(invoice);
             // guardar detalle de orden de compra, factura y obtener id
             _context.SaveChanges();
 
@@ -105,6 +108,7 @@ namespace AutoTagBackEnd.Controllers
                 Quantity = 1,
                 Amount = price.Amount
             };
+            _context.InvoiceDetails.Add(invoiceDetail);
             // guardar detalle de factura
             _context.SaveChanges();
 
@@ -150,6 +154,7 @@ namespace AutoTagBackEnd.Controllers
                 Amount = invoice.Amount,
                 IsDevelopment = useDevelopmentData
             };
+            _context.Transactions.Add(transaction);
             // guardar transacción
             _context.SaveChanges();
 

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Net.Http.Headers;
 using System.Security.Cryptography;
 using System.Text;
 using AutoTagBackEnd.Models;
@@ -37,17 +38,18 @@ namespace AutoTagBackEnd.Helpers
                 postData.Add("apiKey", apikey);
                 postData.Add("commerceOrder", invoice.Code ?? "error");
                 postData.Add("subject", "ViaSimple - Factura Nº" + invoice.Code);
-                postData.Add("amount", invoice.Amount.ToString("N:2"));
+                postData.Add("currency", "CLP");
+                postData.Add("amount", invoice.Amount.ToString("N0").Replace(",", String.Empty));
                 postData.Add("email", account.Email);
                 postData.Add("paymentMethod", (gatewayFlow.PaymentMethod ?? 9).ToString());
                 postData.Add("urlConfirmation", gatewayFlow.UrlConfirmation ?? "error");
-                postData.Add("urlReturn", gatewayFlow.UrlReturn ?? "error");
+                postData.Add("urlReturn", gatewayFlow.BackendUrlReturn ?? "error");
 
                 // generar string con valores ordenados
                 string orderedString = postData.OrderBy(p => p.Key).Select(p => p.Key + p.Value).Aggregate((i, j) => i + j);
 
                 // generar firma
-                string signature = BitConverter.ToString(hmacSHA256(orderedString, secretKey)).Replace("-", "").ToLower();
+                string signature = hmacSHA256(orderedString, secretKey);
 
                 // agregar firma
                 postData.Add("s", signature);
@@ -58,9 +60,11 @@ namespace AutoTagBackEnd.Helpers
                     content.Headers.Add("Content-Type", "application/x-www-form-urlencoded");
 
                     string url = restApiUrl + "/payment/create";
-                    HttpResponseMessage response = await httpClient.PostAsync(restApiUrl, content);
+                    HttpResponseMessage response = await httpClient.PostAsync(url, content);
 
-                    return await response.Content.ReadAsAsync<CreatePaymentResponse>();
+                    CreatePaymentResponse createPaymentResponse = await response.Content.ReadAsAsync<CreatePaymentResponse>();
+
+                    return createPaymentResponse;
                 }
             }
         }
@@ -89,7 +93,7 @@ namespace AutoTagBackEnd.Helpers
                 string orderedString = postData.OrderBy(p => p.Key).Select(p => p.Key + p.Value).Aggregate((i, j) => i + j);
 
                 // generar firma
-                string signature = BitConverter.ToString(hmacSHA256(orderedString, secretKey)).Replace("-", "").ToLower();
+                string signature = hmacSHA256(orderedString, secretKey);
 
                 // agregar firma
                 postData.Add("s", signature);
@@ -99,7 +103,7 @@ namespace AutoTagBackEnd.Helpers
                     content.Headers.Clear();
                     content.Headers.Add("Content-Type", "application/x-www-form-urlencoded");
 
-                    string url = restApiUrl + "/payment/create";
+                    string url = restApiUrl + "/payment/getStatus";
                     HttpResponseMessage response = await httpClient.PostAsync(restApiUrl, content);
 
                     return await response.Content.ReadAsAsync<PaymentStatus>();
@@ -107,12 +111,13 @@ namespace AutoTagBackEnd.Helpers
             }
         }
 
-        static byte[] hmacSHA256(string data, string key)
+        static string hmacSHA256(string data, string key)
         {
-            using (HMACSHA256 hmac = new HMACSHA256(Encoding.ASCII.GetBytes(key)))
-            {
-                return hmac.ComputeHash(Encoding.ASCII.GetBytes(data));
-            }
+            UTF8Encoding encoding = new UTF8Encoding();
+            Byte[] keyBytes = encoding.GetBytes(key);
+            Byte[] hashBytes = encoding.GetBytes(data);
+            using (HMACSHA256 hash = new HMACSHA256(keyBytes)) hashBytes = hash.ComputeHash(hashBytes);
+            return BitConverter.ToString(hashBytes).Replace("-", "").ToLower();
         }
     }
 

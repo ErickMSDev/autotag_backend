@@ -11,22 +11,22 @@ using Microsoft.AspNetCore.Mvc.Filters;
 
 namespace AutoTagBackEnd.Controllers
 {
-	[Route("api/[controller]/[action]")]
-	public class GatewayController : AppController
-	{
-		private readonly AutoTagContext _context;
+    [Route("api/[controller]/[action]")]
+    public class GatewayController : AppController
+    {
+        private readonly AutoTagContext _context;
 
-		public GatewayController(AutoTagContext context)
-		{
-			_context = context;
-		}
+        public GatewayController(AutoTagContext context)
+        {
+            _context = context;
+        }
 
         [HttpPost]
         public async Task<ActionResult> FlowConfirmation([FromForm] string token)
         {
             PaymentStatus? paymentStatus = await Flow.GetStatusAsync(_context, token, this.CurrentAccount);
 
-            if(paymentStatus.Code != null)
+            if (paymentStatus.Code != null)
             {
                 throw new Exception(String.Format(
                     "Error al leer estado de pago con token {0}, error: {1}, mensaje: {2}",
@@ -36,12 +36,12 @@ namespace AutoTagBackEnd.Controllers
             List<TransactionState> listTransactionState = _context.TransactionStates.ToList();
 
             // 1 = pendiente de pago
-            if(paymentStatus.status == 1)
+            if (paymentStatus.status == 1)
             {
                 return Ok(new { TransitionStateCode = "pending" });
             }
             // 2 = pagada
-            else if(paymentStatus.status == 2)
+            else if (paymentStatus.status == 2)
             {
                 // obtener TrasactionState pendiente
                 TransactionState transactionStatePending = listTransactionState.SingleOrDefault(t => t.Code == "pending");
@@ -102,12 +102,12 @@ namespace AutoTagBackEnd.Controllers
                 purchaseOrder.PurchaseOrderStateId = purchaseOrderStateActive.Id;
                 // actualizar fecha de vencimiento de orden de compra
                 // si es la primera vez sumar un mes
-                if(purchaseOrder.NextDueDate == null)
+                if (purchaseOrder.NextDueDate == null)
                 {
                     purchaseOrder.NextDueDate = DateTime.Today.AddMonths(1);
                 }
                 // si está vencida
-                else if(purchaseOrder.NextDueDate <= DateTime.Today)
+                else if (purchaseOrder.NextDueDate <= DateTime.Today)
                 {
                     purchaseOrder.NextDueDate = DateTime.Today.AddMonths(1);
                 }
@@ -140,7 +140,7 @@ namespace AutoTagBackEnd.Controllers
 
                 foreach (var product in listProduct)
                 {
-                    if(product.ProductCode == "viasimple_user")
+                    if (product.ProductCode == "viasimple_user")
                     {
                         Role roleUser = listRole.SingleOrDefault(r => r.Code == "user");
                         if (roleUser == null) throw new Exception("No se encontró rol user");
@@ -298,6 +298,58 @@ namespace AutoTagBackEnd.Controllers
             {
                 throw new Exception("Valor inválido para paymentStatus: " + paymentStatus.status);
             }
+        }
+
+        [HttpPost]
+        public RedirectResult FlowReturn([FromForm] string token)
+        {
+            Gateway gatewayFlow = _context.Gateways.SingleOrDefault(g => g.Code == "flow" && g.Enabled);
+            if (gatewayFlow == null)
+            {
+                throw new Exception("No se encontró el medio de pago flow");
+            }
+            if (gatewayFlow.UrlReturn == null)
+            {
+                throw new Exception("No se encontró la url de retorno para flow");
+            }
+            string urlReturn = string.Format("{0}?token={1}", gatewayFlow.UrlReturn, token);
+            return Redirect(gatewayFlow.UrlReturn);
+        }
+
+        [HttpPost]
+        public ActionResult FlowGetStatus([FromBody] string token)
+        {
+            Gateway gatewayFlow = _context.Gateways.SingleOrDefault(g => g.Code == "flow" && g.Enabled);
+            if (gatewayFlow == null)
+            {
+                throw new Exception("No se encontró el medio de pago flow");
+            }
+            var data = (
+                from t in _context.Transactions
+                join ts in _context.TransactionStates
+                on t.TransactionStateId equals ts.Id
+                join i in _context.Invoices
+                on t.InvoiceId equals i.Id
+                join o in _context.PurchaseOrders
+                on i.PurchaseOrderId equals o.Id
+                join a in _context.Accounts
+                on o.AccountId equals a.Id
+                join r in _context.Roles
+                on a.RoleId equals r.Id
+                where t.GatewayToken == token && o.AccountId == this.CurrentAccount.Id
+                select new
+                {
+                    TransactionStateCode = ts.Code,
+                    AccountRoleCode = r.Code
+                }
+            ).SingleOrDefault();
+
+            if(data == null)
+            {
+                throw new Exception("No se logró obtener la transacción con el token: " + token);
+            }
+
+            return Ok(new { TransitionStateCode = data.TransactionStateCode, AccountRoleCode = data.TransactionStateCode });
         }
     }
 }

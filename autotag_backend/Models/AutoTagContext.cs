@@ -474,6 +474,11 @@ namespace AutoTagBackEnd.Models
                     .IsUnicode(false)
                     .HasColumnName("api_key_prod");
 
+                entity.Property(e => e.BackendUrlReturn)
+                    .HasMaxLength(200)
+                    .IsUnicode(false)
+                    .HasColumnName("backend_url_return");
+
                 entity.Property(e => e.Code)
                     .HasMaxLength(50)
                     .IsUnicode(false)
