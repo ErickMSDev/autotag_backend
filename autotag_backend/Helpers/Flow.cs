@@ -69,13 +69,29 @@ namespace AutoTagBackEnd.Helpers
             }
         }
 
-        public static async Task<PaymentStatus> GetStatusAsync(AutoTagContext _context, string token, Account account)
+        public static async Task<PaymentStatus> GetStatusAsync(AutoTagContext _context, string token)
         {
             // Obtener medio de pago
             Gateway gatewayFlow = _context.Gateways.SingleOrDefault(g => g.Code == "flow" && g.Enabled);
             if (gatewayFlow == null)
             {
                 throw new Exception("No se encontró el medio de pago flow");
+            }
+
+            Account account = (from t in _context.Transactions
+                               join i in _context.Invoices
+                               on t.InvoiceId equals i.Id
+                               join po in _context.PurchaseOrders
+                               on i.PurchaseOrderId equals po.Id
+                               join a in _context.Accounts
+                               on po.AccountId equals a.Id
+                               where t.GatewayToken == token && t.GatewayId == gatewayFlow.Id
+                               select a
+                               ).SingleOrDefault();
+
+            if(account == null)
+            {
+                throw new Exception("No se encontró cuenta");
             }
 
             bool useDevelopmentData = gatewayFlow.UseDevelopmentData || account.UseDevelopmentPurchaseData;

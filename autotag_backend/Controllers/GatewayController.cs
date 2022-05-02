@@ -24,7 +24,7 @@ namespace AutoTagBackEnd.Controllers
         [HttpPost]
         public async Task<ActionResult> FlowConfirmation([FromForm] string token)
         {
-            PaymentStatus? paymentStatus = await Flow.GetStatusAsync(_context, token, this.CurrentAccount);
+            PaymentStatus? paymentStatus = await Flow.GetStatusAsync(_context, token);
 
             if (paymentStatus.Code != null)
             {
@@ -353,7 +353,7 @@ namespace AutoTagBackEnd.Controllers
                 return Ok(new { CurrentAccountId = this.CurrentAccount.Id, Token = body.Token });
             }
 
-            return Ok(new { TransitionStateCode = data.TransactionStateCode, AccountRoleCode = data.TransactionStateCode });
+            return Ok(new { TransitionStateCode = data.TransactionStateCode, AccountRoleCode = data.AccountRoleCode });
         }
     }
 }
