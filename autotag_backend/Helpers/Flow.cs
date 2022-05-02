@@ -100,11 +100,11 @@ namespace AutoTagBackEnd.Helpers
 
                 using (var content = new FormUrlEncodedContent(postData))
                 {
-                    content.Headers.Clear();
-                    content.Headers.Add("Content-Type", "application/x-www-form-urlencoded");
-
                     string url = restApiUrl + "/payment/getStatus";
-                    HttpResponseMessage response = await httpClient.PostAsync(url, content);
+                    url = url + "?apiKey=" + postData["apiKey"];
+                    url = url + "&token=" + postData["token"];
+                    url = url + "&s=" + postData["s"];
+                    HttpResponseMessage response = await httpClient.GetAsync(url);
 
                     return await response.Content.ReadAsAsync<PaymentStatus>();
                 }
