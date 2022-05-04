@@ -13,6 +13,8 @@
 		public string ReportVehicleAnalysisId { get; set; }
 
 		public string ReportDocumentListId { get; set; }
+
+		public string ReportVehicleRankingId { get; set; }
 	}
 }
 
