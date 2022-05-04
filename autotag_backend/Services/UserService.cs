@@ -165,7 +165,18 @@ namespace AutoTagBackEnd.Services
 
         public Account GetById(AutoTagContext _context, int id)
         {
-            return _context.Accounts.FirstOrDefault(x => x.Id == id);
+            Account account = _context.Accounts.FirstOrDefault(x => x.Id == id);
+            if(account == null)
+            {
+                throw new Exception("No exista la cuenta con el id: " + id.ToString());
+            }
+            Role role = _context.Roles.FirstOrDefault(r => r.Id == account.RoleId);
+            if(role == null)
+            {
+                throw new Exception("No se encontró el rol con el id: " + account.RoleId.ToString());
+            }
+            account.Role = role;
+            return account;
         }
 
         // helper methods
