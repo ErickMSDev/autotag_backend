@@ -30,7 +30,7 @@ namespace AutoTagBackEnd.Controllers
             var response = _userService.Authenticate(_context, body);
 
             if (response == null)
-                return Ok(new { error = new[] { new { type = "password", message = "Email o constraseña incorrecta" } } });
+                return Ok(new { error = new[] { new { type = "password", message = "Email o contraseña incorrecta" } } });
 
             return Ok(response);
         }
@@ -42,7 +42,7 @@ namespace AutoTagBackEnd.Controllers
             var response = _userService.Authenticate(_context, this.CurrentAccount.Id);
 
             if (response == null)
-                return Ok(new { error = new[] { new { type = "password", message = "Email o constraseña incorrecta" } } });
+                return Ok(new { error = new[] { new { type = "password", message = "Email o contraseña incorrecta" } } });
 
             return Ok(response);
         }
