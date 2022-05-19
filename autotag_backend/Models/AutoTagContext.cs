@@ -26,12 +26,15 @@ namespace AutoTagBackEnd.Models
         public virtual DbSet<DocumentState> DocumentStates { get; set; } = null!;
         public virtual DbSet<DomainBlacklist> DomainBlacklists { get; set; } = null!;
         public virtual DbSet<Freeway> Freeways { get; set; } = null!;
+        public virtual DbSet<Gantry> Gantries { get; set; } = null!;
+        public virtual DbSet<GantryDirection> GantryDirections { get; set; } = null!;
         public virtual DbSet<Gateway> Gateways { get; set; } = null!;
         public virtual DbSet<Invoice> Invoices { get; set; } = null!;
         public virtual DbSet<InvoiceDetail> InvoiceDetails { get; set; } = null!;
         public virtual DbSet<InvoiceState> InvoiceStates { get; set; } = null!;
         public virtual DbSet<Notification> Notifications { get; set; } = null!;
         public virtual DbSet<NotificationType> NotificationTypes { get; set; } = null!;
+        public virtual DbSet<PatentGroup> PatentGroups { get; set; } = null!;
         public virtual DbSet<PaymentCycle> PaymentCycles { get; set; } = null!;
         public virtual DbSet<PeopleTransit> PeopleTransits { get; set; } = null!;
         public virtual DbSet<Person> People { get; set; } = null!;
@@ -43,10 +46,12 @@ namespace AutoTagBackEnd.Models
         public virtual DbSet<PurchaseOrder> PurchaseOrders { get; set; } = null!;
         public virtual DbSet<PurchaseOrderDetail> PurchaseOrderDetails { get; set; } = null!;
         public virtual DbSet<PurchaseOrderState> PurchaseOrderStates { get; set; } = null!;
+        public virtual DbSet<RecoverPassword> RecoverPasswords { get; set; } = null!;
         public virtual DbSet<Role> Roles { get; set; } = null!;
         public virtual DbSet<Transaction> Transactions { get; set; } = null!;
         public virtual DbSet<TransactionState> TransactionStates { get; set; } = null!;
         public virtual DbSet<UnbilledTransit> UnbilledTransits { get; set; } = null!;
+        public virtual DbSet<Vehicle> Vehicles { get; set; } = null!;
         public virtual DbSet<VehicleAssignment> VehicleAssignments { get; set; } = null!;
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
@@ -387,6 +392,8 @@ namespace AutoTagBackEnd.Models
                     .IsUnicode(false)
                     .HasColumnName("vehicle_patent");
 
+                entity.Property(e => e.Velocity).HasColumnName("velocity");
+
                 entity.HasOne(d => d.Document)
                     .WithMany(p => p.DocumentDetails)
                     .HasForeignKey(d => d.DocumentId)
@@ -456,6 +463,73 @@ namespace AutoTagBackEnd.Models
                     .HasForeignKey(d => d.PortalId)
                     .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("FK_Freeway_Portal");
+            });
+
+            modelBuilder.Entity<Gantry>(entity =>
+            {
+                entity.ToTable("Gantry");
+
+                entity.Property(e => e.Id).HasColumnName("id");
+
+                entity.Property(e => e.Code)
+                    .HasMaxLength(50)
+                    .IsUnicode(false)
+                    .HasColumnName("code");
+
+                entity.Property(e => e.FreewayId).HasColumnName("Freeway_id");
+
+                entity.Property(e => e.GantryDirectionId).HasColumnName("GantryDirection_id");
+
+                entity.Property(e => e.Lat)
+                    .HasMaxLength(20)
+                    .IsUnicode(false)
+                    .HasColumnName("lat");
+
+                entity.Property(e => e.Lon)
+                    .HasMaxLength(20)
+                    .IsUnicode(false)
+                    .HasColumnName("lon");
+
+                entity.Property(e => e.Name)
+                    .HasMaxLength(100)
+                    .IsUnicode(false)
+                    .HasColumnName("name");
+
+                entity.Property(e => e.PrevCode)
+                    .HasMaxLength(50)
+                    .IsUnicode(false)
+                    .HasColumnName("prev_code");
+
+                entity.Property(e => e.PrevDistance).HasColumnName("prev_distance");
+
+                entity.HasOne(d => d.Freeway)
+                    .WithMany(p => p.Gantries)
+                    .HasForeignKey(d => d.FreewayId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_Gantry_Freeway");
+
+                entity.HasOne(d => d.GantryDirection)
+                    .WithMany(p => p.Gantries)
+                    .HasForeignKey(d => d.GantryDirectionId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_Gantry_GantryDirection");
+            });
+
+            modelBuilder.Entity<GantryDirection>(entity =>
+            {
+                entity.ToTable("GantryDirection");
+
+                entity.Property(e => e.Id).HasColumnName("id");
+
+                entity.Property(e => e.Code)
+                    .HasMaxLength(50)
+                    .IsUnicode(false)
+                    .HasColumnName("code");
+
+                entity.Property(e => e.Name)
+                    .HasMaxLength(100)
+                    .IsUnicode(false)
+                    .HasColumnName("name");
             });
 
             modelBuilder.Entity<Gateway>(entity =>
@@ -680,6 +754,28 @@ namespace AutoTagBackEnd.Models
                     .HasColumnName("name");
             });
 
+            modelBuilder.Entity<PatentGroup>(entity =>
+            {
+                entity.ToTable("PatentGroup");
+
+                entity.Property(e => e.Id).HasColumnName("id");
+
+                entity.Property(e => e.LatestPatentDownloaded)
+                    .HasMaxLength(50)
+                    .IsUnicode(false)
+                    .HasColumnName("latest_patent_downloaded");
+
+                entity.Property(e => e.Name)
+                    .HasMaxLength(50)
+                    .IsUnicode(false)
+                    .HasColumnName("name");
+
+                entity.Property(e => e.PatentDigits)
+                    .HasMaxLength(50)
+                    .IsUnicode(false)
+                    .HasColumnName("patent_digits");
+            });
+
             modelBuilder.Entity<PaymentCycle>(entity =>
             {
                 entity.ToTable("PaymentCycle");
@@ -816,6 +912,14 @@ namespace AutoTagBackEnd.Models
                 entity.Property(e => e.HasFirstSuccessfulProcess).HasColumnName("has_first_successful_process");
 
                 entity.Property(e => e.HasPendingProcess).HasColumnName("has_pending_process");
+
+                entity.Property(e => e.LastProcessRequestDate)
+                    .HasColumnType("datetime")
+                    .HasColumnName("last_process_request_date");
+
+                entity.Property(e => e.LastSuccessfulProcessDate)
+                    .HasColumnType("datetime")
+                    .HasColumnName("last_successful_process_date");
 
                 entity.Property(e => e.Password)
                     .HasMaxLength(50)
@@ -1005,6 +1109,26 @@ namespace AutoTagBackEnd.Models
                     .HasColumnName("name");
             });
 
+            modelBuilder.Entity<RecoverPassword>(entity =>
+            {
+                entity.ToTable("RecoverPassword");
+
+                entity.Property(e => e.Id).HasColumnName("id");
+
+                entity.Property(e => e.Code)
+                    .IsUnicode(false)
+                    .HasColumnName("code");
+
+                entity.Property(e => e.CreationDate)
+                    .HasColumnType("datetime")
+                    .HasColumnName("creation_date");
+
+                entity.Property(e => e.Email)
+                    .HasMaxLength(100)
+                    .IsUnicode(false)
+                    .HasColumnName("email");
+            });
+
             modelBuilder.Entity<Role>(entity =>
             {
                 entity.ToTable("Role");
@@ -1172,6 +1296,78 @@ namespace AutoTagBackEnd.Models
                     .HasForeignKey(d => d.PortalAccountId)
                     .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("FK_UnbilledTransit_PortalAccount");
+            });
+
+            modelBuilder.Entity<Vehicle>(entity =>
+            {
+                entity.ToTable("Vehicle");
+
+                entity.Property(e => e.Id).HasColumnName("id");
+
+                entity.Property(e => e.Brand)
+                    .HasMaxLength(50)
+                    .IsUnicode(false)
+                    .HasColumnName("brand");
+
+                entity.Property(e => e.Color)
+                    .HasMaxLength(50)
+                    .IsUnicode(false)
+                    .HasColumnName("color");
+
+                entity.Property(e => e.DownloadedPatent)
+                    .HasMaxLength(50)
+                    .IsUnicode(false)
+                    .HasColumnName("downloaded_patent");
+
+                entity.Property(e => e.Fines)
+                    .HasMaxLength(50)
+                    .IsUnicode(false)
+                    .HasColumnName("fines");
+
+                entity.Property(e => e.Model)
+                    .HasMaxLength(50)
+                    .IsUnicode(false)
+                    .HasColumnName("model");
+
+                entity.Property(e => e.NChasis)
+                    .HasMaxLength(50)
+                    .IsUnicode(false)
+                    .HasColumnName("n_chasis");
+
+                entity.Property(e => e.NMotor)
+                    .HasMaxLength(50)
+                    .IsUnicode(false)
+                    .HasColumnName("n_motor");
+
+                entity.Property(e => e.OwnerName)
+                    .HasMaxLength(100)
+                    .IsUnicode(false)
+                    .HasColumnName("owner_name");
+
+                entity.Property(e => e.OwnerRun)
+                    .HasMaxLength(50)
+                    .IsUnicode(false)
+                    .HasColumnName("owner_run");
+
+                entity.Property(e => e.Patent)
+                    .HasMaxLength(50)
+                    .IsUnicode(false)
+                    .HasColumnName("patent");
+
+                entity.Property(e => e.PatentGroupId).HasColumnName("PatentGroup_id");
+
+                entity.Property(e => e.Type)
+                    .HasMaxLength(50)
+                    .IsUnicode(false)
+                    .HasColumnName("type");
+
+                entity.Property(e => e.Year).HasColumnName("year");
+
+                entity.HasOne(d => d.PatentGroup)
+                    .WithMany(p => p.Vehicles)
+                    .HasForeignKey(d => d.PatentGroupId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_Vehicle_PatentGroup");
             });
 
             modelBuilder.Entity<VehicleAssignment>(entity =>

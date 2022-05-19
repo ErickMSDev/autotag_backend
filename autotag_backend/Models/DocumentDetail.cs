@@ -22,6 +22,7 @@ namespace AutoTagBackEnd.Models
         public string? RateType { get; set; }
         public string? Tag { get; set; }
         public decimal? Kilometres { get; set; }
+        public double? Velocity { get; set; }
 
         public virtual Document Document { get; set; } = null!;
     }

@@ -20,6 +20,8 @@ namespace AutoTagBackEnd.Models
         public bool Removed { get; set; }
         public bool HasPendingProcess { get; set; }
         public DateTime CreationDate { get; set; }
+        public DateTime? LastProcessRequestDate { get; set; }
+        public DateTime? LastSuccessfulProcessDate { get; set; }
         public DateTime? DeletionDate { get; set; }
         public bool HasFirstSuccessfulProcess { get; set; }
         public string? ErrorMessage { get; set; }

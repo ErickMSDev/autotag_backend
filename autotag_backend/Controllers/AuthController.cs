@@ -74,5 +74,33 @@ namespace AutoTagBackEnd.Controllers
 
             return Ok(response);
         }
+
+        [HttpPost]
+        public IActionResult RecoverPassword([FromBody] RecoverPasswordRequest body)
+        {
+            var response = _userService.RecoverPassword(_context, body);
+
+            if (response != null)
+                return Ok(new { error = new[] { new { type = "email", message = response } } });
+
+            return Ok(new { success = true });
+        }
+
+        [HttpPost]
+        public IActionResult NewPassword([FromBody] NewPasswordRequest body)
+        {
+            DateTime minDateAllowed = DateTime.Now.AddHours(-3);
+            RecoverPassword recoverPassword = _context.RecoverPasswords.Where(ar => ar.Code == body.Token && ar.CreationDate >= minDateAllowed).FirstOrDefault();
+
+            if (recoverPassword == null)
+                return Ok(new { error = new[] { new { type = "email", message = "El link no es válido" } } });
+
+            var response = _userService.NewPassword(_context, body);
+
+            if (response == null)
+                return Ok(new { error = new[] { new { type = "email", message = "La cuenta no existe" } } });
+
+            return Ok(response);
+        }
     }
 }

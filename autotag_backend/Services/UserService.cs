@@ -16,7 +16,9 @@ namespace AutoTagBackEnd.Services
         AuthenticateResponse Authenticate(AutoTagContext _context, LoginRequest model);
         AuthenticateResponse Authenticate(AutoTagContext _context, int accountId);
         string RequestRegister(AutoTagContext _context, RegisterRequest model);
+        string RecoverPassword(AutoTagContext _context, RecoverPasswordRequest model);
         AuthenticateResponse Register(AutoTagContext _context, AccountRequest model);
+        AuthenticateResponse NewPassword(AutoTagContext _context, NewPasswordRequest model);
         IEnumerable<Account> GetAll(AutoTagContext _context);
         Account GetById(AutoTagContext _context, int id);
     }
@@ -138,7 +140,7 @@ namespace AutoTagBackEnd.Services
             {
                 RoleId = role.Id,
                 Email = model.Email.ToLower(),
-                Password = model.Password,
+                Password = model.Password.Trim(),
                 FirstName = model.FirstName.ToLower(),
                 LastName = model.LastName.ToLower(),
                 CreationDate = DateTime.Now,
@@ -156,6 +158,76 @@ namespace AutoTagBackEnd.Services
             _context.SaveChanges();
 
             return new AuthenticateResponse(newAccount, token);
+        }
+
+        public string RecoverPassword(AutoTagContext _context, RecoverPasswordRequest model)
+        {
+            Account account = _context.Accounts.SingleOrDefault(x => x.Email == model.Email);
+
+            // return null if user not found
+            if (account == null) return "La cuenta no existe";
+
+            string code = Guid.NewGuid().ToString().Replace("-", string.Empty) + Guid.NewGuid().ToString().Replace("-", string.Empty);
+
+            // Crear AccountRequest
+            RecoverPassword recoverPassword = new()
+            {
+                Email = model.Email,
+                CreationDate = DateTime.Now,
+                Code = code
+            };
+            _context.RecoverPasswords.Add(recoverPassword);
+            _context.SaveChanges();
+
+            CultureInfo cultureInfo = Thread.CurrentThread.CurrentCulture;
+            TextInfo textInfo = cultureInfo.TextInfo;
+
+            // Enviar mail de confirmación de mail
+            EmailService.SendEmail(new UserEmailOptions()
+            {
+                ToEmails = new List<string>() { recoverPassword.Email },
+                Subject = "Recuperación de Contraseña",
+                Template = "recuperacion_contrasena",
+                Params = new Dictionary<string, string>()
+                {
+                    ["accountFirstName"] = textInfo.ToTitleCase(account.FirstName),
+                    ["token"] = recoverPassword.Code
+                }
+            });
+
+            return null;
+        }
+
+        public AuthenticateResponse NewPassword(AutoTagContext _context, NewPasswordRequest model)
+        {
+            RecoverPassword recoverPassword = _context.RecoverPasswords.SingleOrDefault(x => x.Code == model.Token);
+            if (recoverPassword == null) throw new Exception("No se encontró el token");
+
+            Account account = _context.Accounts.SingleOrDefault(x => x.Email == recoverPassword.Email);
+
+            // return null if user not found
+            if (account == null) return null;
+
+            Role role = _context.Roles.SingleOrDefault(x => x.Id == account.RoleId);
+
+            // return null if role not found
+            if (role == null) throw new Exception("No se encontró el rol user");
+
+            account.Password = model.Password.Trim();
+            _context.SaveChanges();
+
+            // authentication successful so generate jwt token
+            var token = generateJwtToken(account);
+
+            // eliminar RecoverPasswords
+            var recoverPasswords = _context.RecoverPasswords.Where(ar => ar.Email == account.Email).ToList();
+            _context.RecoverPasswords.RemoveRange(recoverPasswords);
+            _context.SaveChanges();
+
+            // asignar rol
+            account.Role = role;
+
+            return new AuthenticateResponse(account, token);
         }
 
         public IEnumerable<Account> GetAll(AutoTagContext _context)
